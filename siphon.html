@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html manifest="siphon.manifest">
+  <head>
+	<title>Siphon: CoffeeScript Programming Environment</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+	<!-- フルスクリーンモード -->
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<!-- 数字を電話番号とみなさないように-->
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="shortcut icon" href="images/favicon.ico" />
+	<link rel="icon" href="images/favicon.ico" />
+	<!-- ホーム画面用アイコン -->
+	<link rel="apple-touch-icon" href="images/icon.png" />
+	<!-- 起動画面 -->
+	<link rel="apple-touch-startup-image" href="images/startup.png" />
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />
+	<link rel="stylesheet" href="lib/codemirror.css">
+	<link rel="stylesheet" href="theme/default.css">
+	<link rel="stylesheet" type="text/css" href="siphon.css" />
+	<script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+	<script type="text/javascript">
+	  $(document).bind("mobileinit", function(){
+	  $.mobile.defaultPageTransition = "fade";
+	  });
+	</script>
+	<script src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
+	<script src="lib/codemirror.js"></script>
+	<script src="mode/coffeescript/coffeescript.js"></script>
+	<script src="mode/javascript/javascript.js"></script>
+	<!-- CoffeeScriptコンパイラ -->
+	<script src="http://jashkenas.github.com/coffee-script/extras/coffee-script.js"></script>
+	<script type="text/coffeescript" src="siphon.coffee"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-510249-13']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+  </head>
+
+  <body>
+	<div data-role="page" id="editorpage" data-theme="c">
+	  <div data-role="header" class="ui-bar" data-theme="c" data-type="horizontal">
+		<div data-role="controlgroup" data-type="horizontal">
+		  <select id="open" data-icon="grid" data-iconpos="left">
+			<option>Open...</option>
+		  </select>
+		  <div id="save" data-role="button" data-icon="check">Save</div>
+		  <div id="saveas" data-role="button" data-icon="star">Save As...</div>
+		  <select id="delete" data-icon="delete" data-iconpos="left">
+			<option>Delete...</option>
+		  </select>
+		  <select id="import" data-icon="plus" data-iconpos="left">
+			<option value="" disabled="true">Import...</option>
+			<option value="http://documentcloud.github.com/underscore/underscore-min.js">Underscore.js: functional programming support</option>
+			<option value="http://processingjs.org/content/download/processing-js-1.3.6/processing-1.3.6-api.min.js">Processing.js API: APIs in visualition language</option>
+		  </select>
+		  <div id="about" data-role="button" data-icon="info">About Siphon</div>
+		</div>
+		<div data-role="navbar">
+		  <ul>
+			<li><a href="#editorpage" class="ui-btn-active ui-state-persist">Editor</a></li>
+			<li><a href="#compiledpage">Compiled Code</a></li>
+			<li><a href="#" class="run">Run</a></li>
+			<li><a href="#settingpage">Setting</a></li>
+			<li><a href="#smooth" data-transition="fade">References</a></li>
+		  </ul>
+		</div>
+	  </div>
+	  <div data-role="content" id="main">
+		<div id="editor"></div>
+		<div id="error"></div>
+		<div id="keyback">
+		  <div id="keys">
+			<div class="clear">
+			  <div id="Control" class="key main">cntrl</div>
+			  <div id="Shift" class="key main">shift</div>
+			  <div id="U+0009" class="key main">tab</div>
+			  <div title="#" class="key main">#</div>
+			  <div title="$" class="key main">$
+				<div title="%" class="key sub">%</div>
+			  </div>
+			  <div title="&" class="key main">&amp;
+				<div title="|" class="key sub">|</div>
+			  </div>
+			  <div id="Left" class="key main">◀</div>
+			  <div id="Right" class="key main">▶</div>
+			  <div id="Up" class="key main">▲</div>
+			  <div id="Home" class="key main">home</div>
+			  <div id="PageUp" class="key main">up</div>
+			</div>
+			<div class="clear">
+			  <div id="Alt" class="key main">alt</div>
+			  <div title="(" class="key main">(
+				<div title=")" class="key sub">)</div>
+			  </div>
+			  <div title="[" class="key main">[
+				<div title="]" class="key sub">]</div>
+			  </div>
+			  <div title="{" class="key main">{
+				<div title="}" class="key sub">}</div>
+			  </div>
+			  <div title="<" class="key main">&lt;
+				<div title=">" class="key sub">&gt;</div>
+			  </div>
+			  <div title="+" class="key main">+
+				<div title="-" class="key sub">-</div>
+			  </div>
+			  <div title="*" class="key main">*
+				<div title="/" class="key sub">/</div>
+			  </div>
+			  <div title="=" class="key main">=
+				<div title=":" class="key sub">:</div>
+			  </div>
+			  <div id="Down" class="key main">▼</div>
+			  <div id="End" class="key main">end</div>
+			  <div id="PageDown" class="key main">down</div>
+			</div>
+			<div id="numbers" class="clear">
+			  <div id="Meta" class="key main">⌘</div>
+			  <div title="1" class="key main">1</div>
+			  <div title="2" class="key main">2</div>
+			  <div title="3" class="key main">3</div>
+			  <div title="4" class="key main">4</div>
+			  <div title="5" class="key main">5</div>
+			  <div title="6" class="key main">6</div>
+			  <div title="7" class="key main">7</div>
+			  <div title="8" class="key main">8</div>
+			  <div title="9" class="key main">9</div>
+			  <div title="0" class="key main">0</div>
+			</div>
+			<div class="clear"></div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+
+	<div data-role="page" id="compiledpage" data-theme="c">
+	  <div data-role="header" data-theme="c">
+		<h1>Compiled JavaScript Code</h1>
+		<div data-role="navbar">
+		  <ul>
+			<li><a href="#editorpage">Editor</a></li>
+			<li><a href="#compiledpage" class="ui-btn-active ui-state-persist">Compiled Code</a></li>
+			<li><a href="#" class="run">Run</a></li>
+			<li><a href="#settingpage">Setting</a></li>
+			<li><a href="#smooth">References</a></li>
+		  </ul>
+		</div>
+	  </div>
+	  <div data-role="content">
+		<pre id="compiled"></pre>
+	  </div>
+	</div>
+
+	<div data-role="page" id="runpage" data-theme="c">
+	  <div data-role="header" data-theme="c">
+		<h1>Execution</h1>
+		<div data-role="navbar">
+		  <ul>
+			<li><a href="#editorpage">Editor</a></li>
+			<li><a href="#compiledpage" >Compiled Code</a></li>
+			<li><a href="#" class="run ui-btn-active ui-state-persist">Run</a></li>
+			<li><a href="#settingpage">Setting</a></li>
+			<li><a href="#smooth">References</a></li>
+		  </ul>
+		</div>
+	  </div>
+	  <div data-role="content">
+		<canvas id="canvas"></canvas>
+	  </div>
+	</div>
+
+	<div data-role="page" id="settingpage" data-theme="c">
+	  <div data-role="header" data-theme="c">
+		<h1>Siphon Setting</h1>
+		<div data-role="navbar">
+		  <ul>
+			<li><a href="#editorpage">Editor</a></li>
+			<li><a href="#compiledpage" >Compiled Code</a></li>
+			<li><a href="#" class="run">Run</a></li>
+			<li><a href="#settingpage" class="ui-btn-active ui-state-persist">Setting</a></li>
+			<li><a href="#smooth">References</a></li>
+		  </ul>
+		</div>
+	  </div>
+	  <div data-role="content">
+		<div data-role="fieldcontain" date-inset="true">
+		  <fieldset data-role="controlgroup">
+			<input type="checkbox" id="keyboard-on" />
+			<label for="keyboard-on">Enables keyboard enhancement for iPad.</label>
+			<input type="checkbox" id="key-sound" checked />
+			<label for="key-sound">Enables click sound of the above keyboard enhancement.</label>
+			<input type="checkbox" id="smart-indent" />
+			<label for="smart-indent">Enables smart indent.</label>
+		  </fieldset>
+		</div>
+	  </div>
+	</div>
+	<div data-role="page" id="smooth" data-theme="c">
+	  <div data-role="header" data-theme="c" data-position="fixed">
+		<h1>Smooth CoffeeScript</h1>
+		<div data-role="navbar">
+		  <ul>
+			<li><a href="#editorpage">Editor</a></li>
+			<li></li>
+			<li></li>
+			<li><a href="#underscore" data-transition="flip">Underscore.js</a></li>
+			<li><a href="#smooth" class="ui-btn-active ui-state-persist">Smooth CofeeScript</a></li>
+		  </ul>
+		</div>
+	  </div>
+	  <div data-role="content" style="height: 100%;">
+		<iframe src="Smooth CoffeeScript.html" width="100%" height="100%"></iframe><!-- width and height don't work on iPad but work on desktop. -->
+	  </div>
+	</div>
+
+	<div data-role="page" id="underscore" data-theme="c">
+	  <div data-role="header" data-theme="c">
+		<h1>Underscore.js</h1>
+		<div data-role="navbar">
+		  <ul>
+			<li><a href="#editorpage">Editor</a></li>
+			<li></li>
+			<li></li>
+			<li><a href="#underscore" class="ui-btn-active ui-state-persist">Underscore.js</a></li>
+			<li><a href="#smooth" data-transition="flip">Smooth CofeeScript</a></li>
+		  </ul>
+		</div>
+	  </div>
+	  <div data-role="content" style="height: 100%;">
+		<iframe src="Underscore.js.html" width="100%" height="100%"></iframe>
+	  </div>
+	</div>
+  </body>
+</html>
