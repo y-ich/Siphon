@@ -294,7 +294,9 @@ class KeyFSM
     @timer = null
 
   touchStart : (@startX, @startY) ->
-    setTimeout (-> keySound.play()), 0
+    # setTimeout (-> keySound.play()), 0
+    # sound performance trick implemented in keySound class is unstable.
+    setTimeout (-> keySound.source.play()), 0
     @setState keyActive
     if @subkey()?
       @timer = setTimeout (=> @setState keySubActive), @holdTime
