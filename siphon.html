@@ -32,6 +32,12 @@
 	<script src="http://jashkenas.github.com/coffee-script/extras/coffee-script.js"></script>
 	<script type="text/coffeescript" src="siphon.coffee"></script>
 <script type="text/javascript">
+	if ('standalone' in navigator && !navigator.standalone && (/iphone|ipod|ipad/gi).test(navigator.platform) && (/Safari/i).test(navigator.appVersion)) {
+		document.write('<link rel="stylesheet" href="lib\/add2home.css">');
+		document.write('<script type="application\/javascript" src="lib\/add2home.js" charset="utf-8"><\/s' + 'cript>');
+	}
+</script>
+<script type="text/javascript">
 
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-510249-13']);
