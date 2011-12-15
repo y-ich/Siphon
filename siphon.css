@@ -89,6 +89,11 @@
 	background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(65,134,245)), to(rgb(25,79,220)));
 }
 
+.overview {
+  margin: 5px;
+  background: white;
+}
+
 #canvas {
   width: 95%;
   height: 40%;
