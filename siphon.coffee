@@ -560,7 +560,7 @@ $(document).ready ->
   $('#saveas').click clickSaveas
 
   $('#about').click ->
-    alert 'Siphon\nCoffeeScript Programming Environment\nVersion 0.4.2\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.'
+    alert 'Siphon\nCoffeeScript Programming Environment\nVersion 0.4.3\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.'
 
   resetSelects() # "Open...", and "Delete..." menus
 
