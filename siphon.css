@@ -40,6 +40,7 @@
 	width: 100%;
 	padding-top: 7px;
 	padding-left: 7px;
+	display: none;
 }
 
 .clear {
@@ -89,9 +90,38 @@
 	background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(65,134,245)), to(rgb(25,79,220)));
 }
 
-.overview {
+#corkboard {
+	height: 307px; /* iOSKeyboardHeight */
+}
+
+.ui-block-a {
+  height: 100%;
+}
+
+.ui-block-b {
+  height: 100%;
+}
+
+#console {
   margin: 5px;
   background: white;
+	-webkit-
+}
+
+#tips {
+  margin: 10px;
+  background: rgb(254, 247, 133);
+  height: 90%;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+#cheat {
+  margin: 10px;
+  background: rgb(254, 247, 133);
+  height: 90%;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
 }
 
 #canvas {

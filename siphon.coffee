@@ -9,7 +9,8 @@
 # editor object
 editor = null
 jsviewer = null
-pasteBuffer = null
+clipboard = null
+jssnippet = ''
 
 #
 # utility functions
@@ -29,6 +30,15 @@ run = ->
     eval jsviewer.getValue()
   catch error
     alert error.message
+
+evalCS = (str) ->
+    try
+      jssnippet = CoffeeScript.compile str
+      result = eval jssnippet
+      $('#error').text('done.')
+      return result
+    catch error
+      $('#error').text(error.message)
 
 
 # utility for resetSelect
@@ -71,12 +81,13 @@ layoutEditor = ->
     $('#error').outerHeight(true) -
     ($(editor.element).outerHeight(true) - $(editor.element).height())
   if $('#keyboard-on')[0].checked
-    $('#keyback').css('display', 'block')
+    $('#keys').css('display', 'block')
     keybackHeight = iOSKeyboardHeight + $('#keys').outerHeight(true)
-    restHeight -= keybackHeight
-    $('#keyback').height(keybackHeight + 'px')
   else
-    $('#keyback').css('display', 'none')
+    keybackHeight = iOSKeyboardHeight
+    $('#keys').css('display', 'none')
+  restHeight -= keybackHeight
+  $('#keyback').height(keybackHeight + 'px')
   restHeight = Math.max(restHeight, 12)
   editor.setHeight restHeight + 'px'
   jsElement = jsviewer.getWrapperElement()
@@ -422,11 +433,11 @@ $(document).ready ->
   $('#editorpage').addBackBtn = false # no back button on top page.
 
   editor = CodeMirror $('#editor')[0],
-    value :  "alert 'edit me and run!'"
+    value :  "#Select a line below by tapping the line and pressing cntrl + l.\n#And press cntrl + r to run the line and see the result.\n1 + 1"
     matchBrackets: true
     mode : 'coffeescript'
     onChange : -> editor.compile()
-    onKeyEvent : (instance, e) ->
+   onKeyEvent : (instance, e) ->
       e.mobile ?= {}
       e.mobile.metaKey = $('#Meta')[0].model? and
         $('#Meta')[0].model.state is keyActive
@@ -440,18 +451,34 @@ $(document).ready ->
         switch e.keyCode
           when 88 # 'X'.charCodeAt(0)
             if e.type is 'keydown'
-              pasteBuffer = editor.getSelection()
+              clipboard = editor.getSelection()
               editor.replaceSelection('')
             e.stop()
             return true
           when 67 # 'C'.charCodeAt(0)
             if e.type is 'keydown'
-              pasteBuffer = editor.getSelection()
+              clipboard = editor.getSelection()
             e.stop()
             return true
           when 86 # 'V'.charCodeAt(0)
-            if e.type is 'keydown' and pasteBuffer? and pasteBuffer isnt ''
-              fireTextEvent pasteBuffer, TextEvent.DOM_INPUT_METHOD_PASTE
+            if e.type is 'keydown' and clipboard? and clipboard isnt ''
+              fireTextEvent clipboard, TextEvent.DOM_INPUT_METHOD_PASTE
+            e.stop()
+            return true
+      if e.ctrlKey or e.mobile.ctrlKey
+        switch e.keyCode
+          when 76 # 'L'.charCodeAt(0)
+            if e.type is 'keydown'
+              line = editor.getCursor().line
+              editor.setSelection {line : line, ch : 0},
+                {line : line, ch : editor.getLine(line).length}
+            e.stop()
+            return true
+          when 82 # 'R'.charCodeAt(0)
+            if e.type is 'keydown'
+              clipboard = editor.getSelection()
+              result = evalCS(clipboard)
+              editor.replaceSelection result.toString() if result?
             e.stop()
             return true
       return false
@@ -482,6 +509,8 @@ $(document).ready ->
     $('#editorpage').live 'pageshow', (event, ui) -> editor.refresh()
     $('#compiledpage').live 'pageshow', (event, ui) -> jsviewer.refresh()
 
+  $('#keyback').css('display', 'block')
+  # keyback is not showed until layout for the beauty.
   layoutEditor()
   # problem
   #  When debug console is enabled on iPad, just after loading,
