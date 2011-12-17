@@ -4,6 +4,10 @@
  Copyright (C) 2011 safari-park
 */
 
+.ui-bar {
+  padding: 0;
+}
+
 .ui-select {
 	width: auto;
 	display: inline-block;
