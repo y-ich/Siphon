@@ -437,7 +437,7 @@ $(document).ready ->
     matchBrackets: true
     mode : 'coffeescript'
     onChange : -> editor.compile()
-   onKeyEvent : (instance, e) ->
+    onKeyEvent : (instance, e) ->
       e.mobile ?= {}
       e.mobile.metaKey = $('#Meta')[0].model? and
         $('#Meta')[0].model.state is keyActive
