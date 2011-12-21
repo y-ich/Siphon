@@ -483,6 +483,14 @@ $(document).ready ->
             return true
       return false
 
+  # In order to improve unexpected scroll during inputting on iPad.
+  editor.bodyTop = 0
+  ta = editor.getInputField()
+  ta.addEventListener 'mousedown', ->
+    editor.bodyTop = document.body.scrollTop
+  ta.addEventListener 'focus', ->
+    window.scrollTo 0, editor.bodyTop
+
   editor.element = editor.getWrapperElement()
   editor.setHeight = (str) ->
     this.getScrollerElement().style.height = str

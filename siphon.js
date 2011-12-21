@@ -467,7 +467,7 @@
   });
 
   $(document).ready(function() {
-    var parent;
+    var parent, ta;
     try {
       if (navigator.onLine) appCache.update();
     } catch (e) {
@@ -482,8 +482,8 @@
         return editor.compile();
       },
       onKeyEvent: function(instance, e) {
-        var line, result, _ref;
-        if ((_ref = e.mobile) == null) e.mobile = {};
+        var line, result;
+        if (e.mobile == null) e.mobile = {};
         e.mobile.metaKey = ($('#Meta')[0].model != null) && $('#Meta')[0].model.state === keyActive;
         e.mobile.ctrlKey = ($('#Control')[0].model != null) && $('#Control')[0].model.state === keyActive;
         e.mobile.altKey = ($('#Alt')[0].model != null) && $('#Alt')[0].model.state === keyActive;
@@ -537,6 +537,14 @@
         return false;
       }
     });
+    editor.bodyTop = 0;
+    ta = editor.getInputField();
+    ta.addEventListener('mousedown', function() {
+      return editor.bodyTop = document.body.scrollTop;
+    });
+    ta.addEventListener('focus', function() {
+      return window.scrollTo(0, editor.bodyTop);
+    });
     editor.element = editor.getWrapperElement();
     editor.setHeight = function(str) {
       this.getScrollerElement().style.height = str;
@@ -580,11 +588,9 @@
       return event.preventDefault();
     });
     $('.key.main').bind('touchstart', function(event) {
-      var touchPoint, _ref;
+      var touchPoint;
       touchPoint = event.originalEvent.targetTouches[0];
-      if ((_ref = this.model) == null) {
-        this.model = new KeyFSM(keyInactive, this, 400);
-      }
+      if (this.model == null) this.model = new KeyFSM(keyInactive, this, 400);
       return this.model.touchStart(touchPoint.pageX, touchPoint.pageY);
     });
     $('.key.main').bind('touchmove', function(event) {

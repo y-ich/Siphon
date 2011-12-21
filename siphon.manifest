@@ -14,7 +14,6 @@ images/icon.png
 images/favicon.ico
 images/startup.png
 lib/codemirror.css
-theme/default.css
 lib/codemirror.js
 mode/coffeescript/coffeescript.js
 mode/javascript/javascript.js
