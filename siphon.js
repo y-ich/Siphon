@@ -25,7 +25,9 @@
   evalCS = function(str) {
     var result;
     try {
-      jssnippet = CoffeeScript.compile(str);
+      jssnippet = CoffeeScript.compile(str, {
+        bare: true
+      });
       result = eval(jssnippet);
       $('#error').text('done.');
       return result;
@@ -617,7 +619,7 @@
     });
     $('#saveas').click(clickSaveas);
     $('#about').click(function() {
-      return alert('Siphon\nCoffeeScript Programming Environment\nVersion 0.4.3\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.');
+      return alert('Siphon\nCoffeeScript Programming Environment\nVersion 0.4.4\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.');
     });
     resetSelects();
     $('#open').change(function() {
