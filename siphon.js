@@ -561,10 +561,6 @@
     $('#key-sound').change(function() {
       return keySound.enable = this.checked ? true : false;
     });
-    $('#smart-indent').change(function() {
-      return editor.setOption('tabMode', this.checked ? 'smart' : 'classic');
-    });
-    $('#codemirror').change(function() {});
     return editor.compile();
   });
 

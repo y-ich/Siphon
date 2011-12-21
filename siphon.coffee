@@ -522,8 +522,4 @@ $(document).ready ->
   $('#key-sound').change ->
     keySound.enable = if this.checked then true else false
 
-  $('#smart-indent').change ->
-    editor.setOption 'tabMode', if this.checked then 'smart' else 'classic'
-
-  $('#codemirror').change ->
   editor.compile()
