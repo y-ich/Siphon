@@ -1,5 +1,5 @@
 (function() {
-  var KeyFSM, KeyState, appCache, capitalize, clickSaveas, clipboard, currentFile, editor, evalCS, fileOptions, fireKeyEvent, fireTextEvent, iOSKeyboardHeight, jssnippet, jsviewer, keyActive, keyCodes, keyInactive, keySound, keySubActive, keySubInactive, layoutEditor, pos2xy, resetSelect, resetSelects, run, selectionDirection, xy2pos;
+  var KeyFSM, KeyState, appCache, capitalize, clickSaveas, clipboard, currentFile, editor, evalCS, fileOptions, fireKeyEvent, fireTextEvent, iOSKeyboardHeight, jssnippet, jsviewer, keyActive, keyCodes, keyInactive, keySound, keySubActive, keySubInactive, layoutEditor, pos2xy, resetSelect, resetSelects, run, xy2pos;
 
   editor = null;
 
@@ -112,112 +112,15 @@
 
   KeyboardEvent.DOM_KEY_LOCATION_STANDARD = 0;
 
-  selectionDirection = 'none';
-
   fireKeyEvent = function(type, keyIdentifier, keyCode, charCode) {
-    var e, pos, shiftKey, ta, xy;
+    var e;
     e = document.createEvent('KeyboardEvent');
     e.initKeyboardEvent(type, true, true, window, keyIdentifier, KeyboardEvent.DOM_KEY_LOCATION_STANDARD, '');
     e.mobile = {
       keyCode: keyCode,
       charCode: charCode
     };
-    ta = editor.getInputField();
-    if (type === 'keydown') {
-      shiftKey = ($('#Shift')[0].model != null) && $('#Shift')[0].model.state === keyActive;
-      switch (keyIdentifier) {
-        case 'Left':
-          if (shiftKey) {
-            if (ta.selectionStart === ta.selectionEnd || selectionDirection === 'backward') {
-              pos = Math.max(ta.selectionStart - 1, 0);
-              ta.setSelectionRange(pos, ta.selectionEnd);
-              selectionDirection = 'backward';
-            } else {
-              pos = Math.max(ta.selectionEnd - 1, 0);
-              ta.setSelectionRange(ta.selectionStart, pos);
-              selectionDirection = 'forward';
-            }
-          } else {
-            pos = Math.max(ta.selectionEnd - 1, 0);
-            ta.setSelectionRange(pos, pos);
-            selectionDirection = 'none';
-          }
-          break;
-        case 'Right':
-          if (shiftKey) {
-            if (ta.selectionStart === ta.selectionEnd || selectionDirection === 'forward') {
-              pos = Math.min(ta.selectionEnd + 1, ta.value.length);
-              ta.setSelectionRange(ta.selectionStart, pos);
-              selectionDirection = 'forward';
-            } else {
-              pos = Math.min(ta.selectionStart + 1, ta.value.length);
-              ta.setSelectionRange(pos, ta.selectionEnd);
-              selectionDirection = 'backward';
-            }
-          } else {
-            pos = Math.min(ta.selectionEnd + 1, ta.value.length);
-            ta.setSelectionRange(pos, pos);
-            selectionDirection = 'none';
-          }
-          break;
-        case 'Up':
-          if (shiftKey) {
-            if (ta.selectionStart === ta.selectionEnd || selectionDirection === 'backward') {
-              xy = pos2xy(ta.value, ta.selectionStart);
-              if (xy.y > 0) xy.y = xy.y - 1;
-              pos = xy2pos(ta.value, xy);
-              ta.setSelectionRange(pos, ta.selectionEnd);
-              selectionDirection = 'backward';
-            } else {
-              xy = pos2xy(ta.value, ta.selectionEnd);
-              if (xy.y > 0) xy.y = xy.y - 1;
-              pos = xy2pos(ta.value, xy);
-              if (pos < ta.selectionStart) {
-                ta.setSelectionRange(pos, ta.selectionStart);
-                selectionDirection = 'backward';
-              } else {
-                ta.setSelectionRange(ta.selectionStart, pos);
-                selectionDirection = 'forward';
-              }
-            }
-          } else {
-            xy = pos2xy(ta.value, ta.selectionEnd);
-            if (xy.y > 0) xy.y = xy.y - 1;
-            pos = xy2pos(ta.value, xy);
-            ta.setSelectionRange(pos, pos);
-            selectionDirection = 'none';
-          }
-          break;
-        case 'Down':
-          if (shiftKey) {
-            if (ta.selectionStart === ta.selectionEnd || selectionDirection === 'forward') {
-              xy = pos2xy(ta.value, ta.selectionEnd);
-              xy.y = xy.y + 1;
-              pos = xy2pos(ta.value, xy);
-              ta.setSelectionRange(ta.selectionStart, pos);
-              selectionDirection = 'forward';
-            } else {
-              xy = pos2xy(ta.value, ta.selectionStart);
-              xy.y = xy.y + 1;
-              pos = xy2pos(ta.value, xy);
-              if (pos > ta.selectionEnd) {
-                ta.setSelectionRange(ta.selectionEnd, pos);
-                selectionDirection = 'forward';
-              } else {
-                ta.setSelectionRange(pos, ta.selectionEnd);
-                selectionDirection = 'backward';
-              }
-            }
-          } else {
-            xy = pos2xy(ta.value, ta.selectionEnd);
-            xy.y = xy.y + 1;
-            pos = xy2pos(ta.value, xy);
-            ta.setSelectionRange(pos, pos);
-            selectionDirection = 'none';
-          }
-      }
-    }
-    return ta.dispatchEvent(e);
+    return editor.getInputField().dispatchEvent(e);
   };
 
   pos2xy = function(str, pos) {

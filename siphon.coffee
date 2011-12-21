@@ -115,7 +115,6 @@ KeyboardEvent.DOM_KEY_LOCATION_STANDARD = 0
 # emulates keyboard event.
 # Since many properties of KeyboardEvent are read only and can not be set,
 # mobile property is added instead.
-selectionDirection = 'none'
 fireKeyEvent = (type, keyIdentifier, keyCode, charCode) ->
   e = document.createEvent 'KeyboardEvent'
   e.initKeyboardEvent type, true, true, window, keyIdentifier,
@@ -124,90 +123,7 @@ fireKeyEvent = (type, keyIdentifier, keyCode, charCode) ->
   e.mobile =
     keyCode : keyCode
     charCode : charCode
-  ta = editor.getInputField()
-
-  # Since cursor key doesn't have any effect above, it is treated below.
-  if type is 'keydown'
-    shiftKey = $('#Shift')[0].model? and $('#Shift')[0].model.state is keyActive
-    switch keyIdentifier
-      when 'Left'
-        if shiftKey
-          if ta.selectionStart == ta.selectionEnd or selectionDirection is 'backward'
-            pos = Math.max ta.selectionStart - 1, 0
-            ta.setSelectionRange(pos, ta.selectionEnd)
-            selectionDirection = 'backward'
-          else
-            pos = Math.max ta.selectionEnd - 1, 0
-            ta.setSelectionRange(ta.selectionStart, pos)
-            selectionDirection = 'forward'
-        else
-          pos = Math.max ta.selectionEnd - 1, 0
-          ta.setSelectionRange(pos, pos)
-          selectionDirection = 'none'
-      when 'Right'
-        if shiftKey
-          if ta.selectionStart == ta.selectionEnd or selectionDirection is 'forward'
-            pos = Math.min ta.selectionEnd + 1, ta.value.length
-            ta.setSelectionRange(ta.selectionStart, pos)
-            selectionDirection = 'forward'
-          else
-            pos = Math.min ta.selectionStart + 1, ta.value.length
-            ta.setSelectionRange(pos, ta.selectionEnd)
-            selectionDirection = 'backward'
-        else
-          pos = Math.min ta.selectionEnd + 1, ta.value.length
-          ta.setSelectionRange(pos, pos)
-          selectionDirection = 'none'
-      when 'Up'
-        if shiftKey
-          if ta.selectionStart == ta.selectionEnd or selectionDirection is 'backward'
-            xy = pos2xy ta.value, ta.selectionStart
-            xy.y = xy.y - 1 if xy.y > 0
-            pos = xy2pos ta.value, xy
-            ta.setSelectionRange(pos, ta.selectionEnd)
-            selectionDirection = 'backward'
-          else
-            xy = pos2xy ta.value, ta.selectionEnd
-            xy.y = xy.y - 1 if xy.y > 0
-            pos = xy2pos ta.value, xy
-            if pos < ta.selectionStart
-              ta.setSelectionRange(pos, ta.selectionStart)
-              selectionDirection = 'backward'
-            else
-              ta.setSelectionRange(ta.selectionStart, pos)
-              selectionDirection = 'forward'
-        else
-          xy = pos2xy ta.value, ta.selectionEnd
-          xy.y = xy.y - 1 if xy.y > 0
-          pos = xy2pos ta.value, xy
-          ta.setSelectionRange(pos, pos)
-          selectionDirection = 'none'
-      when 'Down'
-        if shiftKey
-          if ta.selectionStart == ta.selectionEnd or selectionDirection is 'forward'
-            xy = pos2xy ta.value, ta.selectionEnd
-            xy.y = xy.y + 1
-            pos = xy2pos ta.value, xy
-            ta.setSelectionRange(ta.selectionStart, pos)
-            selectionDirection = 'forward'
-          else
-            xy = pos2xy ta.value, ta.selectionStart
-            xy.y = xy.y + 1
-            pos = xy2pos ta.value, xy
-            if pos > ta.selectionEnd
-              ta.setSelectionRange(ta.selectionEnd, pos)
-              selectionDirection = 'forward'
-            else
-              ta.setSelectionRange(pos, ta.selectionEnd)
-              selectionDirection = 'backward'
-        else
-          xy = pos2xy ta.value, ta.selectionEnd
-          xy.y = xy.y + 1
-          pos = xy2pos ta.value, xy
-          ta.setSelectionRange(pos, pos)
-          selectionDirection = 'none'
-  ta.dispatchEvent(e)
-
+  editor.getInputField().dispatchEvent(e)
 
 pos2xy = (str, pos) ->
   lines = str.split('\n')
