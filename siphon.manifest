@@ -9,7 +9,7 @@ http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js
 http://code.jquery.com/mobile/1.0/images/ajax-loader.png
 http://code.jquery.com/mobile/1.0/images/icons-18-white.png
 http://jashkenas.github.com/coffee-script/extras/coffee-script.js
-siphon.coffee
+siphon.js
 images/icon.png
 images/favicon.ico
 images/startup.png
