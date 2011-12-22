@@ -1,0 +1,28 @@
+CACHE MANIFEST
+# version 327
+
+CACHE:
+http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css
+siphon.css
+http://code.jquery.com/jquery-1.6.4.min.js
+http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js
+http://code.jquery.com/mobile/1.0/images/ajax-loader.png
+http://code.jquery.com/mobile/1.0/images/icons-18-white.png
+http://jashkenas.github.com/coffee-script/extras/coffee-script.js
+siphon.coffee
+images/icon.png
+images/favicon.ico
+images/startup.png
+lib/codemirror.css
+lib/codemirror.js
+mode/coffeescript/coffeescript.js
+mode/javascript/javascript.js
+
+FALLBACK:
+Smooth%20CoffeeScript.html		missing.html
+Underscore.js.html	missing.html
+
+NETWORK:
+sounds/click.aiff
+http://www.google-analytics.com/
+*
