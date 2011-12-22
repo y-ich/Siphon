@@ -1,5 +1,5 @@
 (function() {
-  var KeyFSM, KeyState, appCache, capitalize, clickSaveas, clipboard, currentFile, editor, evalCS, fileOptions, fireKeyEvent, fireTextEvent, iOSKeyboardHeight, jssnippet, jsviewer, keyActive, keyCodes, keyInactive, keySound, keySubActive, keySubInactive, layoutEditor, pos2xy, resetSelect, resetSelects, run, xy2pos;
+  var KeyFSM, KeyState, appCache, appCacheUpdate, capitalize, clickSaveas, clipboard, currentFile, editor, evalCS, fileOptions, fireKeyEvent, fireTextEvent, iOSKeyboardHeight, initEditor, initViewer, jssnippet, jsviewer, keyActive, keyCodes, keyInactive, keySound, keySubActive, keySubInactive, layoutEditor, menuBar, navigationBar, onKeyEventforiPad, pos2xy, resetSelect, resetSelects, run, settingMenu, softKeyboard, xy2pos;
 
   editor = null;
 
@@ -371,76 +371,25 @@
     return console.log('Application cache error.');
   });
 
-  $(document).ready(function() {
-    var parent, ta;
+  appCacheUpdate = function() {
     try {
-      if (navigator.onLine) appCache.update();
+      if (navigator.onLine) return appCache.update();
     } catch (e) {
-      console.log(e);
+      return console.log(e);
     }
-    $('#editorpage').addBackBtn = false;
+  };
+
+  initEditor = function() {
+    var ta;
     editor = CodeMirror($('#editor')[0], {
       value: "#Select a line below by tapping the line and pressing cntrl + l.\n#And press cntrl + r to run the line and see the result.\n1 + 1",
       matchBrackets: true,
       mode: 'coffeescript',
+      lineNumbers: true,
       onChange: function() {
         return editor.compile();
       },
-      onKeyEvent: function(instance, e) {
-        var line, result;
-        if (e.mobile == null) e.mobile = {};
-        e.mobile.metaKey = ($('#Meta')[0].model != null) && $('#Meta')[0].model.state === keyActive;
-        e.mobile.ctrlKey = ($('#Control')[0].model != null) && $('#Control')[0].model.state === keyActive;
-        e.mobile.altKey = ($('#Alt')[0].model != null) && $('#Alt')[0].model.state === keyActive;
-        e.mobile.shiftKey = ($('#Shift')[0].model != null) && $('#Shift')[0].model.state === keyActive;
-        if (e.mobile.metaKey) {
-          switch (e.keyCode) {
-            case 88:
-              if (e.type === 'keydown') {
-                clipboard = editor.getSelection();
-                editor.replaceSelection('');
-              }
-              e.stop();
-              return true;
-            case 67:
-              if (e.type === 'keydown') clipboard = editor.getSelection();
-              e.stop();
-              return true;
-            case 86:
-              if (e.type === 'keydown' && (clipboard != null) && clipboard !== '') {
-                fireTextEvent(clipboard, TextEvent.DOM_INPUT_METHOD_PASTE);
-              }
-              e.stop();
-              return true;
-          }
-        }
-        if (e.ctrlKey || e.mobile.ctrlKey) {
-          switch (e.keyCode) {
-            case 76:
-              if (e.type === 'keydown') {
-                line = editor.getCursor().line;
-                editor.setSelection({
-                  line: line,
-                  ch: 0
-                }, {
-                  line: line,
-                  ch: editor.getLine(line).length
-                });
-              }
-              e.stop();
-              return true;
-            case 82:
-              if (e.type === 'keydown') {
-                clipboard = editor.getSelection();
-                result = evalCS(clipboard);
-                if (result != null) editor.replaceSelection(result.toString());
-              }
-              e.stop();
-              return true;
-          }
-        }
-        return false;
-      }
+      onKeyEvent: onKeyEventforiPad
     });
     editor.bodyTop = 0;
     ta = editor.getInputField();
@@ -455,7 +404,7 @@
       this.getScrollerElement().style.height = str;
       return this.refresh();
     };
-    editor.compile = function() {
+    return editor.compile = function() {
       try {
         jsviewer.setValue(CoffeeScript.compile(this.getValue(), {
           bare: true
@@ -465,6 +414,10 @@
         return $('#error').text(error.message);
       }
     };
+  };
+
+  initViewer = function() {
+    var parent;
     parent = $('#compiled').parent()[0];
     $('#compiled').remove();
     jsviewer = CodeMirror(parent, {
@@ -475,23 +428,66 @@
       this.getScrollerElement().style.height = str;
       return this.refresh();
     };
-    $('textarea', jsviewer.getWrapperElement()).attr('disabled', 'true');
-    if (/iPad/.test(navigator.userAgent)) {
-      $('#keyboard-on')[0].checked = true;
-    } else {
-      $('#editorpage').live('pageshow', function(event, ui) {
-        return editor.refresh();
-      });
-      $('#compiledpage').live('pageshow', function(event, ui) {
-        return jsviewer.refresh();
-      });
+    return $('textarea', jsviewer.getWrapperElement()).attr('disabled', 'true');
+  };
+
+  onKeyEventforiPad = function(instance, e) {
+    var line, result;
+    if (e.mobile == null) e.mobile = {};
+    e.mobile.metaKey = ($('#Meta')[0].model != null) && $('#Meta')[0].model.state === keyActive;
+    e.mobile.ctrlKey = ($('#Control')[0].model != null) && $('#Control')[0].model.state === keyActive;
+    e.mobile.altKey = ($('#Alt')[0].model != null) && $('#Alt')[0].model.state === keyActive;
+    e.mobile.shiftKey = ($('#Shift')[0].model != null) && $('#Shift')[0].model.state === keyActive;
+    if (e.mobile.metaKey) {
+      switch (e.keyCode) {
+        case 88:
+          if (e.type === 'keydown') {
+            clipboard = editor.getSelection();
+            editor.replaceSelection('');
+          }
+          e.stop();
+          return true;
+        case 67:
+          if (e.type === 'keydown') clipboard = editor.getSelection();
+          e.stop();
+          return true;
+        case 86:
+          if (e.type === 'keydown' && (clipboard != null) && clipboard !== '') {
+            fireTextEvent(clipboard, TextEvent.DOM_INPUT_METHOD_PASTE);
+          }
+          e.stop();
+          return true;
+      }
     }
-    $('#keyback').css('display', 'block');
-    layoutEditor();
-    document.body.onresize = layoutEditor;
-    $('.key.main').mousedown(function(event) {
-      return event.preventDefault();
-    });
+    if (e.ctrlKey || e.mobile.ctrlKey) {
+      switch (e.keyCode) {
+        case 76:
+          if (e.type === 'keydown') {
+            line = editor.getCursor().line;
+            editor.setSelection({
+              line: line,
+              ch: 0
+            }, {
+              line: line,
+              ch: editor.getLine(line).length
+            });
+          }
+          e.stop();
+          return true;
+        case 82:
+          if (e.type === 'keydown') {
+            clipboard = editor.getSelection();
+            result = evalCS(clipboard);
+            if (result != null) editor.replaceSelection(result.toString());
+          }
+          e.stop();
+          return true;
+      }
+    }
+    return false;
+  };
+
+  softKeyboard = function() {
     $('.key.main').bind('touchstart', function(event) {
       var touchPoint;
       touchPoint = event.originalEvent.targetTouches[0];
@@ -502,12 +498,12 @@
       this.model.touchMove(event.originalEvent);
       return event.preventDefault();
     });
-    $('.key.main').bind('touchend', function(event) {
+    return $('.key.main').bind('touchend', function(event) {
       return this.model.touchEnd();
     });
-    $('.run').click(function() {
-      return run();
-    });
+  };
+
+  menuBar = function() {
     $('#new').click(function() {
       editor.setValue('');
       return currentFile = null;
@@ -541,7 +537,7 @@
       $('#delete')[0].selectedIndex = 0;
       return $('#delete').selectmenu('refresh');
     });
-    $('#import').change(function() {
+    return $('#import').change(function() {
       var script;
       if (confirm('Do you want to import "' + $('#import')[0].value + '"?')) {
         /*
@@ -557,10 +553,46 @@
       $('#import')[0].selectedIndex = 0;
       return $('#import').selectmenu('refresh');
     });
+  };
+
+  navigationBar = function() {
+    return $('.run').click(function() {
+      return run();
+    });
+  };
+
+  settingMenu = function() {
     $('#keyboard-on').change(layoutEditor);
-    $('#key-sound').change(function() {
+    return $('#key-sound').change(function() {
       return keySound.enable = this.checked ? true : false;
     });
+  };
+
+  $(document).ready(function() {
+    appCacheUpdate();
+    $('#editorpage').addBackBtn = false;
+    $('.key.main').mousedown(function(event) {
+      return event.preventDefault();
+    });
+    initEditor();
+    initViewer();
+    if (/iPad/.test(navigator.userAgent)) {
+      $('#keyboard-on')[0].checked = true;
+    } else {
+      $('#editorpage').live('pageshow', function(event, ui) {
+        return editor.refresh();
+      });
+      $('#compiledpage').live('pageshow', function(event, ui) {
+        return jsviewer.refresh();
+      });
+    }
+    $('#keyback').css('display', 'block');
+    layoutEditor();
+    document.body.onresize = layoutEditor;
+    softKeyboard();
+    navigationBar();
+    menuBar();
+    settingMenu();
     return editor.compile();
   });
 

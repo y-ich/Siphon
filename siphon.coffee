@@ -12,12 +12,14 @@ jsviewer = null
 clipboard = null
 jssnippet = ''
 
+
 #
 # utility functions
 #
 
 # returns a string with the first character capitalized.
 capitalize = (word) -> word.substring(0, 1).toUpperCase() + word.substring(1)
+
 
 #
 # code snippets
@@ -50,6 +52,7 @@ fileOptions = ->
     result.push e
   result
 
+
 # utility for resetSelects
 resetSelect = (id) ->
   selector = '#' + id
@@ -61,10 +64,12 @@ resetSelect = (id) ->
   $(selector).append option
   fileOptions().forEach (e) -> $(selector).append e
 
+
 # makes "Open..." and "Delete..." select menu.
 resetSelects = ->
   resetSelect 'open'
   resetSelect 'delete'
+
 
 # dispatch for saveas
 clickSaveas = ->
@@ -73,7 +78,9 @@ clickSaveas = ->
   localStorage.setItem(currentFile, editor.getValue())
   resetSelects()
 
+
 iOSKeyboardHeight = 307
+
 
 layoutEditor = ->
   restHeight = window.innerHeight -
@@ -95,6 +102,7 @@ layoutEditor = ->
     $('.ui-header').outerHeight(true) -
     ($(jsElement).outerHeight(true) - $(jsElement).height())) + 'px'
 
+
 keyCodes =
   'Control' : 17
   'Alt' : 18
@@ -109,6 +117,7 @@ keyCodes =
   'End' : 35
   'PageDown' : 34
   'Shift' : 16
+
 
 KeyboardEvent.DOM_KEY_LOCATION_STANDARD = 0
 
@@ -125,6 +134,7 @@ fireKeyEvent = (type, keyIdentifier, keyCode, charCode) ->
     charCode : charCode
   editor.getInputField().dispatchEvent(e)
 
+
 pos2xy = (str, pos) ->
   lines = str.split('\n')
   head = 0
@@ -137,12 +147,14 @@ pos2xy = (str, pos) ->
   error.message = 'pos is larger than str.'
   throw error
 
+
 xy2pos = (str, xy) ->
   lines = str.split('\n')
   return str.length unless 0 <= xy.y < lines.length
   pos = 0
   pos += lines[y].length + 1 for y in [0...xy.y]
   return pos + Math.min(xy.x, lines[y].length)
+
 
 TextEvent.DOM_INPUT_METHOD_KEYBOARD = 1
 TextEvent.DOM_INPUT_METHOD_PASTE = 2
@@ -159,6 +171,7 @@ fireTextEvent = (str, method = TextEvent.DOM_INPUT_METHOD_KEYBOARD) ->
 
 # keyname associated with current code in "edit" textarea
 currentFile = null
+
 
 # key sound
 # tunes perfomance by keep pausing during no sound.
@@ -258,10 +271,12 @@ class KeyState
     keySize = $('.key').width()
     -keySize < moveX < keySize and -2 * keySize < moveY < keySize
 
+
 # inactive state
 keyInactive = new KeyState()
 
 keyInactive.update = (main, sub) -> sub.style.display = 'none' if sub?
+
 
 # active state
 keyActive = new KeyState()
@@ -285,6 +300,7 @@ keyActive.touchEnd = (fsm) ->
     fireKeyEvent 'keypress', code, code
   fsm.setState keyInactive
 
+
 # subkey active state
 keySubActive = new KeyState()
 
@@ -305,6 +321,7 @@ keySubActive.touchEnd = (fsm) ->
     fireKeyEvent 'keypress', c, c
   fsm.setState keyInactive
 
+
 # subkey inactive state
 keySubInactive = new KeyState()
 
@@ -317,6 +334,7 @@ keySubInactive.touchMove = (fsm, moveX, moveY) ->
   fsm.setState keySubActive if @inRange(moveX, moveY)
 
 keySubInactive.touchEnd = (fsm) -> fsm.setState keyInactive
+
 
 #
 # Application cache dispatches
@@ -338,66 +356,21 @@ appCache.addEventListener 'obsolete', ->
 appCache.addEventListener 'error', ->
   console.log 'Application cache error.'
   # error occurs when calling update() offline.
-
-$(document).ready ->
+appCacheUpdate = ->
   try
     appCache.update() if navigator.onLine
   catch e
     console.log e
 
-  # jQuery Mobile setting
-  $('#editorpage').addBackBtn = false # no back button on top page.
 
+initEditor = ->
   editor = CodeMirror $('#editor')[0],
     value :  "#Select a line below by tapping the line and pressing cntrl + l.\n#And press cntrl + r to run the line and see the result.\n1 + 1"
     matchBrackets: true
     mode : 'coffeescript'
+    lineNumbers: true
     onChange : -> editor.compile()
-    onKeyEvent : (instance, e) ->
-      e.mobile ?= {}
-      e.mobile.metaKey = $('#Meta')[0].model? and
-        $('#Meta')[0].model.state is keyActive
-      e.mobile.ctrlKey = $('#Control')[0].model? and
-        $('#Control')[0].model.state is keyActive
-      e.mobile.altKey = $('#Alt')[0].model? and
-        $('#Alt')[0].model.state is keyActive
-      e.mobile.shiftKey = $('#Shift')[0].model? and
-        $('#Shift')[0].model.state is keyActive
-      if e.mobile.metaKey
-        switch e.keyCode
-          when 88 # 'X'.charCodeAt(0)
-            if e.type is 'keydown'
-              clipboard = editor.getSelection()
-              editor.replaceSelection('')
-            e.stop()
-            return true
-          when 67 # 'C'.charCodeAt(0)
-            if e.type is 'keydown'
-              clipboard = editor.getSelection()
-            e.stop()
-            return true
-          when 86 # 'V'.charCodeAt(0)
-            if e.type is 'keydown' and clipboard? and clipboard isnt ''
-              fireTextEvent clipboard, TextEvent.DOM_INPUT_METHOD_PASTE
-            e.stop()
-            return true
-      if e.ctrlKey or e.mobile.ctrlKey
-        switch e.keyCode
-          when 76 # 'L'.charCodeAt(0)
-            if e.type is 'keydown'
-              line = editor.getCursor().line
-              editor.setSelection {line : line, ch : 0},
-                {line : line, ch : editor.getLine(line).length}
-            e.stop()
-            return true
-          when 82 # 'R'.charCodeAt(0)
-            if e.type is 'keydown'
-              clipboard = editor.getSelection()
-              result = evalCS(clipboard)
-              editor.replaceSelection result.toString() if result?
-            e.stop()
-            return true
-      return false
+    onKeyEvent : onKeyEventforiPad
 
   # In order to improve unexpected scroll during inputting on iPad.
   editor.bodyTop = 0
@@ -418,6 +391,9 @@ $(document).ready ->
     catch error
       $('#error').text(error.message)
 
+
+# js viewer
+initViewer = ->
   parent = $('#compiled').parent()[0]
   $('#compiled').remove()
   jsviewer = CodeMirror parent, {mode : 'javascript', readOnly : true}
@@ -426,34 +402,57 @@ $(document).ready ->
     this.refresh()
   $('textarea', jsviewer.getWrapperElement()).attr 'disabled', 'true'
 
-  if /iPad/.test(navigator.userAgent)
-    $('#keyboard-on')[0].checked = true
-  else
-    # for desktop safari or chrome
-    $('#editorpage').live 'pageshow', (event, ui) -> editor.refresh()
-    $('#compiledpage').live 'pageshow', (event, ui) -> jsviewer.refresh()
 
-  $('#keyback').css('display', 'block')
-  # keyback is not showed until layout for the beauty.
-  layoutEditor()
-  # problem
-  #  When debug console is enabled on iPad, just after loading,
-  #  1. the debug console is not showed
-  #  2. the innnerHeight is as if it misses debug console.
-  #  3. so the edit area is larger than intention.
-  #  4. the position of soft key buttons is higher than intention.
+onKeyEventforiPad = (instance, e) ->
+  e.mobile ?= {}
+  e.mobile.metaKey = $('#Meta')[0].model? and
+    $('#Meta')[0].model.state is keyActive
+  e.mobile.ctrlKey = $('#Control')[0].model? and
+    $('#Control')[0].model.state is keyActive
+  e.mobile.altKey = $('#Alt')[0].model? and
+    $('#Alt')[0].model.state is keyActive
+  e.mobile.shiftKey = $('#Shift')[0].model? and
+    $('#Shift')[0].model.state is keyActive
+  if e.mobile.metaKey
+    switch e.keyCode
+      when 88 # 'X'.charCodeAt(0)
+        if e.type is 'keydown'
+          clipboard = editor.getSelection()
+          editor.replaceSelection('')
+        e.stop()
+        return true
+      when 67 # 'C'.charCodeAt(0)
+        if e.type is 'keydown'
+          clipboard = editor.getSelection()
+        e.stop()
+        return true
+      when 86 # 'V'.charCodeAt(0)
+        if e.type is 'keydown' and clipboard? and clipboard isnt ''
+          fireTextEvent clipboard, TextEvent.DOM_INPUT_METHOD_PASTE
+        e.stop()
+        return true
+  if e.ctrlKey or e.mobile.ctrlKey
+    switch e.keyCode
+      when 76 # 'L'.charCodeAt(0)
+        if e.type is 'keydown'
+          line = editor.getCursor().line
+          editor.setSelection {line : line, ch : 0},
+            {line : line, ch : editor.getLine(line).length}
+        e.stop()
+        return true
+      when 82 # 'R'.charCodeAt(0)
+        if e.type is 'keydown'
+          clipboard = editor.getSelection()
+          result = evalCS(clipboard)
+          editor.replaceSelection result.toString() if result?
+        e.stop()
+        return true
+  return false
 
-  document.body.onresize = layoutEditor
 
-  # prevents native soft keyboard to slip down when button was released.
-  $('.key.main').mousedown (event) -> event.preventDefault()
-
-  #
-  # HTML soft keyboard
-  #
+softKeyboard = ->
   $('.key.main').bind 'touchstart', (event) ->
     touchPoint = event.originalEvent.targetTouches[0]
-
     # lazy initialization
     this.model ?= new KeyFSM keyInactive, this, 400 #milli seconds
     this.model.touchStart touchPoint.pageX, touchPoint.pageY
@@ -465,11 +464,8 @@ $(document).ready ->
 
   $('.key.main').bind 'touchend', (event) -> this.model.touchEnd()
 
-  $('.run').click -> run()
 
-  #
-  # menu bar
-  #
+menuBar = ->
   $('#new').click ->
     editor.setValue('')
     currentFile = null
@@ -517,9 +513,53 @@ $(document).ready ->
     $('#import')[0].selectedIndex = 0 # index = 0 means "Import..."
     $('#import').selectmenu('refresh')
 
+
+navigationBar = ->
+  $('.run').click -> run()
+
+
+settingMenu = ->
   $('#keyboard-on').change layoutEditor
 
   $('#key-sound').change ->
     keySound.enable = if this.checked then true else false
+
+
+$(document).ready ->
+  appCacheUpdate()
+
+  # jQuery Mobile setting
+  $('#editorpage').addBackBtn = false # no back button on top page.
+
+  # prevents native soft keyboard to slip down when button was released.
+  $('.key.main').mousedown (event) -> event.preventDefault()
+
+  initEditor()
+  initViewer()
+
+  # setttings fitting to userAgent
+  if /iPad/.test(navigator.userAgent)
+    $('#keyboard-on')[0].checked = true
+  else
+    # for desktop safari or chrome
+    $('#editorpage').live 'pageshow', (event, ui) -> editor.refresh()
+    $('#compiledpage').live 'pageshow', (event, ui) -> jsviewer.refresh()
+
+  $('#keyback').css('display', 'block')
+  # keyback is not showed until layout for the beauty.
+  layoutEditor()
+  # problem
+  #  When debug console is enabled on iPad, just after loading,
+  #  1. the debug console is not showed
+  #  2. the innnerHeight is as if it misses debug console.
+  #  3. so the edit area is larger than intention.
+  #  4. the position of soft key buttons is higher than intention.
+
+  document.body.onresize = layoutEditor
+
+  softKeyboard()
+  navigationBar()
+  menuBar()
+  settingMenu()
 
   editor.compile()
