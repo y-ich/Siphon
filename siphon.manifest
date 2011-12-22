@@ -15,6 +15,10 @@ images/favicon.ico
 images/startup.png
 lib/codemirror.css
 lib/codemirror.js
+lib/util/search.js
+lib/util/searchcursor.js
+lib/util/dialog.js
+lib/util/dialog.css
 mode/coffeescript/coffeescript.js
 mode/javascript/javascript.js
 
