@@ -518,7 +518,7 @@
     });
     $('#saveas').click(clickSaveas);
     $('#about').click(function() {
-      return alert('Siphon\nCoffeeScript Programming Environment\nVersion 0.4.4\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.');
+      return alert('Siphon\nCoffeeScript Programming Environment\nVersion 0.5.0\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.');
     });
     resetSelects();
     $('#open').change(function() {
