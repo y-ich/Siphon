@@ -132,7 +132,7 @@ fireKeyEvent = (type, keyIdentifier, keyCode, charCode) ->
   e.mobile =
     keyCode : keyCode
     charCode : charCode
-  editor.getInputField().dispatchEvent(e)
+  document.activeElement.dispatchEvent(e)
 
 
 pos2xy = (str, pos) ->
@@ -163,7 +163,7 @@ fireTextEvent = (str, method = TextEvent.DOM_INPUT_METHOD_KEYBOARD) ->
   e = document.createEvent 'TextEvent'
   e.initTextEvent 'textInput', true, true, window, str,
     TextEvent.DOM_INPUT_METHOD_KEYBOARD
-  editor.getInputField().dispatchEvent(e)
+  document.activeElement.dispatchEvent(e)
 
 #
 # global variables
@@ -480,7 +480,7 @@ menuBar = ->
   $('#saveas').click clickSaveas
 
   $('#about').click ->
-    alert 'Siphon\nCoffeeScript Programming Environment\nVersion 0.5.0\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.'
+    alert 'Siphon\nCoffeeScript Programming Environment\nVersion 0.5.1\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.'
 
   resetSelects() # "Open...", and "Delete..." menus
 
@@ -532,6 +532,7 @@ $(document).ready ->
   $('#editorpage').addBackBtn = false # no back button on top page.
 
   # prevents native soft keyboard to slip down when button was released.
+  # You may not need this hack when using CodeMirror.
   $('.key.main').mousedown (event) -> event.preventDefault()
 
   initEditor()

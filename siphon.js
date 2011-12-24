@@ -120,7 +120,7 @@
       keyCode: keyCode,
       charCode: charCode
     };
-    return editor.getInputField().dispatchEvent(e);
+    return document.activeElement.dispatchEvent(e);
   };
 
   pos2xy = function(str, pos) {
@@ -162,7 +162,7 @@
     if (method == null) method = TextEvent.DOM_INPUT_METHOD_KEYBOARD;
     e = document.createEvent('TextEvent');
     e.initTextEvent('textInput', true, true, window, str, TextEvent.DOM_INPUT_METHOD_KEYBOARD);
-    return editor.getInputField().dispatchEvent(e);
+    return document.activeElement.dispatchEvent(e);
   };
 
   currentFile = null;
@@ -518,7 +518,7 @@
     });
     $('#saveas').click(clickSaveas);
     $('#about').click(function() {
-      return alert('Siphon\nCoffeeScript Programming Environment\nVersion 0.5.0\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.');
+      return alert('Siphon\nCoffeeScript Programming Environment\nVersion 0.5.1\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.');
     });
     resetSelects();
     $('#open').change(function() {
