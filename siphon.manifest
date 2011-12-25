@@ -21,6 +21,9 @@ lib/util/dialog.js
 lib/util/dialog.css
 mode/coffeescript/coffeescript.js
 mode/javascript/javascript.js
+http://documentcloud.github.com/underscore/underscore-min.js
+http://processingjs.org/content/download/processing-js-1.3.6/processing-1.3.6-api.min.js
+lib/awesomechart.js
 
 FALLBACK:
 Smooth%20CoffeeScript.html		missing.html
