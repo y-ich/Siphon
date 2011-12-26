@@ -116,7 +116,7 @@
   margin: 10px;
   background: rgb(254, 247, 133);
   position: relative;
-  -webkit-box-shadow: 0 0px 5px #555;
+  -webkit-box-shadow: 0 2px 2px #555;
   z-index: 2;
 }
 
@@ -128,7 +128,7 @@
   bottom: 2px;
   right: 12px;
   bakground: transparent;
-  -webkit-box-shadow: 0 6px 12px #555;
+  -webkit-box-shadow: 0 3px 6px #555;
   -webkit-transform: skew(2deg) rotate(2deg);
   z-index: -1;
 }
