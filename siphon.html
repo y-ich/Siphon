@@ -71,7 +71,7 @@
 			<option value="" disabled="true">Import...</option>
 			<option value="http://documentcloud.github.com/underscore/underscore-min.js">Underscore.js: functional programming support</option>
 			<option value="http://processingjs.org/content/download/processing-js-1.3.6/processing-1.3.6-api.min.js">Processing.js API: APIs in visualition language</option>
-			<option value="lib/awosomechar.js">AwesomeChartJS: chart rendering library</option>
+			<option value="lib/awesomechart.js">AwesomeChartJS: chart rendering library</option>
 		  </select>
 		  <div id="about" data-role="button" data-icon="info">About Siphon</div>
 		</div>
@@ -150,7 +150,9 @@
 			<div class="clear"></div>
 		  </div>
 			<div id="corkboard" class="ui-grid-a">
-			<div class="ui-block-a"><pre id="tips">
+				<div class="ui-block-a">
+					<div class="sticky">
+						<pre id="tips" class="scroll">
 Editor Tips
 
 Select all: ⌘-a
@@ -180,8 +182,12 @@ Find next: ⌘-g
 Find prev: shift-⌘-g
 Replace: ⌘-alt-f
 Replace all: shift-⌘-alt-f
-</pre></div>
-			<div class="ui-block-b"><pre id="cheat">
+						</pre>
+					</div>
+				</div>
+				<div class="ui-block-b">
+					<div class="sticky">
+						<pre id="cheat" class="scroll">
 # CoffeeScript Cheat Sheet
 # based on "The Little Book on CoffeeScript".
 
@@ -251,7 +257,7 @@ if true == true
   "We're ok"
 if true != true then "Panic"
 if 1 > 0 then "Ok" else "Y2K!"
-alert "It's cold!" if heat < 5
+alert "It's cold!" if heat %lt; 5
 
 # negate operator
 if not true then "Panic"
@@ -350,7 +356,9 @@ class Parrot extends Animal
   constructor : ->
     super("Parrot")
     # super is the function of the super class named as same.
-</pre></div>
+						</pre>
+					</div>
+				</div>
 			</div>
 		</div>
 	  </div>

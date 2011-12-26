@@ -23,6 +23,10 @@
 	font-size: 12pt;
 }
 
+.CodeMirror-scroll {
+  background: white;
+}
+
 #error {
 	margin-top: 15px;
 	margin-bottom: 15px;
@@ -36,7 +40,7 @@
 
 #keyback {
 	width: 100%;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(200,200,210)), to(rgb(67,68,75)));
+/* 	background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(200,200,210)), to(rgb(67,68,75))); */
 	display: none;
 }
 
@@ -53,7 +57,7 @@
 
 .scroll {
 	overflow: auto;
-/*	-webkit-overflow-scrolling: touch; /* is buggy. 2011/12/04 */
+	-webkit-overflow-scrolling: touch;
 }
 
 .key {
@@ -106,26 +110,39 @@
   height: 100%;
 }
 
-#console {
-  margin: 5px;
-  background: white;
-	-webkit-
+.sticky {
+  width: 90%;
+  height: 90%;
+  margin: 10px;
+  background: rgb(254, 247, 133);
+  position: relative;
+  -webkit-box-shadow: 0 0px 5px #555;
+  z-index: 2;
+}
+
+.sticky:after {
+  content: "";
+  width: 40%;
+  height: 10px;
+  position: absolute;
+  bottom: 2px;
+  right: 12px;
+  bakground: transparent;
+  -webkit-box-shadow: 0 6px 12px #555;
+  -webkit-transform: skew(2deg) rotate(2deg);
+  z-index: -1;
 }
 
 #tips {
-  margin: 10px;
+  height: 100%;
   background: rgb(254, 247, 133);
-  height: 90%;
-	overflow: auto;
-	-webkit-overflow-scrolling: touch;
+  z-index: 2;
 }
 
 #cheat {
-  margin: 10px;
+  height: 100%;
   background: rgb(254, 247, 133);
-  height: 90%;
-	overflow: auto;
-	-webkit-overflow-scrolling: touch;
+  z-index: 2;
 }
 
 #canvas {
