@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# version 330
+# version 331
 
 CACHE:
 http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css
@@ -21,15 +21,15 @@ lib/util/dialog.js
 lib/util/dialog.css
 mode/coffeescript/coffeescript.js
 mode/javascript/javascript.js
-http://documentcloud.github.com/underscore/underscore-min.js
-http://processingjs.org/content/download/processing-js-1.3.6/processing-1.3.6-api.min.js
-lib/awesomechart.js
-http://github.com/DmitryBaranovskiy/raphael/raw/master/raphael-min.js
-http://elycharts.com/sites/elycharts.com/repo/dist/elycharts.min.js
 
 FALLBACK:
 Smooth%20CoffeeScript.html		missing.html
 Underscore.js.html	missing.html
+lib/underscore-min.js lib/missing.js
+lib/processing-1.3.6-api.min.js lib/missing.js
+lib/awesomechart.js lib/missing.js
+lib/raphael-min.js lib/missing.js
+lib/elycharts.min.js lib/missing.js
 
 
 NETWORK:
