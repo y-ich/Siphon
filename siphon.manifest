@@ -20,7 +20,7 @@ lib/util/searchcursor.js
 lib/util/dialog.js
 lib/util/dialog.css
 mode/coffeescript/coffeescript.js
-mode/javascript/javascript.js
+mode/xml/xml.js
 
 FALLBACK:
 Smooth%20CoffeeScript.html		missing.html
