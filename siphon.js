@@ -1,5 +1,5 @@
 (function() {
-  var KeyFSM, KeyState, appCache, appCacheUpdate, capitalize, clickSaveas, clipboard, currentFile, editor, evalCS, fileOptions, fireKeyEvent, fireTextEvent, iOSKeyboardHeight, initEditor, initViewer, jssnippet, jsviewer, keyActive, keyCodes, keyInactive, keySound, keySubActive, keySubInactive, layoutEditor, menuBar, navigationBar, onKeyEventforiPad, pos2xy, resetSelect, resetSelects, run, settingMenu, softKeyboard, xy2pos;
+  var KeyFSM, KeyState, appCache, appCacheUpdate, capitalize, clickSaveas, clipboard, currentFile, editor, evalCS, fileOptions, fireKeyEvent, fireTextEvent, iOSKeyboardHeight, initCheatViewer, initEditor, initJSViewer, jssnippet, jsviewer, keyActive, keyCodes, keyInactive, keySound, keySubActive, keySubInactive, layoutEditor, menuBar, navigationBar, onKeyEventforiPad, pos2xy, resetSelect, resetSelects, run, settingMenu, softKeyboard, xy2pos;
 
   editor = null;
 
@@ -416,7 +416,19 @@
     };
   };
 
-  initViewer = function() {
+  initCheatViewer = function() {
+    var parent, viewer;
+    parent = $('#cheat').parent()[0];
+    $('#cheat').remove();
+    viewer = CodeMirror(parent, {
+      mode: 'coffeescript',
+      readOnly: true,
+      value: '# CoffeeScript Cheat Sheet\n# based on "The Little Book on CoffeeScript".\n\n# A comment\n\n###\n  A multiline comment\n###\n\n# No need to declare a variable. Just assign into it.\nmyVariable = "test"\n\n# To export a variable out of the code,\n# make a property in a global object.\nexports = this\nexports.myVariable = "foo-bar"\n\n# "->", called "arrow", means start of function definition.\nfunc = -> "bar"\n\n# INDENTED lines are recognized as a block.\nfunc  ->\n  # An extra line\n  "bar"\n\n# variables in parentheses before the arrow are arguments.\ntimes = (a, b) -> a * b\n\n# equations in parentheses give default values\n# if an argument is omitted when invoking.\ntimes = (a = 1, b = 2) -> a * b\n\n# Variable arguments. nums should be an array.\nsum = (nums...) ->\n  result = 0\n  nums.forEach (n) -> result += n\n  result\n\n# function name + argument(s) is function invocation.\n# parentheses are optional unless no argument.\nalert("Howdy!")\nalert inspect("Howdy!")\n\n# \'=>\', called "fat arrow", also means start of function definition,\n# except that "this" in the fucntion body indicates local context\n# of the function definition.\nthis.clickHandler = -> alert "clicked"\nelement.addEventListener "click", (e) => this.clickHandler(e)\n\n# Object literals. Braces are optional.\nobject1 = {one : 1, two : 2}\nobject2 = one : 1, two : 2\nobject3 =\n  one : 1\n  two : 2\n\n# Array literals. Brackets are mandatory.\narray1 = [1, 2, 3]\narray2 = [\n  1\n  2\n  3\n]\n\n# Conditional expression\nif true == true\n  "We\'re ok"\nif true != true then "Panic"\nif 1 > 0 then "Ok" else "Y2K!"\nalert "It\'s cold!" if heat %lt; 5\n\n# negate operator\nif not true then "Panic"\n\n# unless\nunless true\n  "Panic"\n\n# is/isnt statement\nif true is 1\n  "Type coercion fail!"\nif true isnt true\n  alert "Opposite day!"\n\n# String interpolation.\n# You can embed a value of a variable into a String.\nfavourite_color = "Blue. No, yel..."\nquestion = "Bridgekeeper: What... is your favourite color?\n            Galahad: #{favourite_color}\n            Bridgekeeper: Wrong!\n            "\n# Loops in an array\nprisoners = ["Roger", "Roderick", "Brian"]\nfor name in prisoners\n  alert "Release #{name}"\nfor name, i in ["Roger the pickpocket", "Roderick the robber"]\n  alert "#{i} - Release #{name}"\nrelease prisoner for prisoner in prisoners\nrelease prisoner for prisoner in prisoners when prisoner[0] is "R"\n\n# Loops in an object\nnames = sam: seaborn, donna: moss\nalert("#{first} #{last}") for first, last of names\n\n# "while", the only low-level loop.\nnum = 6\nminstrel = while num -= 1\n  num + " Brave Sir Robin ran away"\n\n# loop is while true\nloop\n  return if comfirm(\'Are you sure?\')\n\n# until is while not\n\n# Arrays\nrange = [1..5] # [1,2,3,4,5]\n\nfirstTwo = ["one", "two", "three"][0..1]\nmy_ = "my string"[0..2]\n\n# Multiple assignments\nnumbers = [0..9]\nnumbers[3..5] = [-3, -4, -5]\n\n# existence in an array.\nwords = ["rattled", "roudy", "rebbles", "ranks"]\nalert "Stop wagging me" if "ranks" in words\n\n# Aliases\n@saviour = true # this.saviour = true\n\nUser::first = -> @records[0] # User.prototype.first = this.record[0]\n\n# existential operators\npraise if brian?\n\nvelocity = southern ? 40\n\n# undefined or null check of return value.\nblackKnight.getLegs()?.kick()\n\n# undefined or null check of function itself.\nblackKnight.getLegs().kick?()\n\n# Class\nclass Animal\n  @find : (name) = -> # class variable(property)\n    # implementation\n\n  price : 5 # instance variable(property)\n\n  constructor : (@name) ->\n  # Instance variable "name" is declared automatically\n  # and the argument would be assigned automatically.\n\n  sell : =>\n    alert "Give me #{@price} shillings!"\n   # using \'=>\' means "this" in body is binded to current instance even if the property is passed as function.\n\nanimal = new Animal\n$("#sell").click(animal.sell)\n\n# Inheritance\nclass Parrot extends Animal\n  constructor : ->\n    super("Parrot")\n    # super is the function of the super class named as same.'
+    });
+    return $('textarea', viewer.getWrapperElement()).attr('disabled', 'true');
+  };
+
+  initJSViewer = function() {
     var parent;
     parent = $('#compiled').parent()[0];
     $('#compiled').remove();
@@ -575,7 +587,7 @@
       return event.preventDefault();
     });
     initEditor();
-    initViewer();
+    initJSViewer();
     if (/iPad/.test(navigator.userAgent)) {
       $('#keyboard-on')[0].checked = true;
     } else {
@@ -588,6 +600,7 @@
     }
     $('#keyback').css('display', 'block');
     layoutEditor();
+    initCheatViewer();
     document.body.onresize = layoutEditor;
     softKeyboard();
     navigationBar();

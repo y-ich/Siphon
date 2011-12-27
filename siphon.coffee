@@ -391,9 +391,187 @@ initEditor = ->
     catch error
       $('#error').text(error.message)
 
+initCheatViewer = ->
+  parent = $('#cheat').parent()[0]
+  $('#cheat').remove()
+  viewer = CodeMirror parent,
+    mode : 'coffeescript'
+    readOnly : true
+    value : '''
+            # CoffeeScript Cheat Sheet
+            # based on "The Little Book on CoffeeScript".
+
+            # A comment
+
+            ###
+              A multiline comment
+            ###
+
+            # No need to declare a variable. Just assign into it.
+            myVariable = "test"
+
+            # To export a variable out of the code,
+            # make a property in a global object.
+            exports = this
+            exports.myVariable = "foo-bar"
+
+            # "->", called "arrow", means start of function definition.
+            func = -> "bar"
+
+            # INDENTED lines are recognized as a block.
+            func  ->
+              # An extra line
+              "bar"
+
+            # variables in parentheses before the arrow are arguments.
+            times = (a, b) -> a * b
+
+            # equations in parentheses give default values
+            # if an argument is omitted when invoking.
+            times = (a = 1, b = 2) -> a * b
+
+            # Variable arguments. nums should be an array.
+            sum = (nums...) ->
+              result = 0
+              nums.forEach (n) -> result += n
+              result
+
+            # function name + argument(s) is function invocation.
+            # parentheses are optional unless no argument.
+            alert("Howdy!")
+            alert inspect("Howdy!")
+
+            # '=>', called "fat arrow", also means start of function definition,
+            # except that "this" in the fucntion body indicates local context
+            # of the function definition.
+            this.clickHandler = -> alert "clicked"
+            element.addEventListener "click", (e) => this.clickHandler(e)
+
+            # Object literals. Braces are optional.
+            object1 = {one : 1, two : 2}
+            object2 = one : 1, two : 2
+            object3 =
+              one : 1
+              two : 2
+
+            # Array literals. Brackets are mandatory.
+            array1 = [1, 2, 3]
+            array2 = [
+              1
+              2
+              3
+            ]
+
+            # Conditional expression
+            if true == true
+              "We're ok"
+            if true != true then "Panic"
+            if 1 > 0 then "Ok" else "Y2K!"
+            alert "It's cold!" if heat %lt; 5
+
+            # negate operator
+            if not true then "Panic"
+
+            # unless
+            unless true
+              "Panic"
+
+            # is/isnt statement
+            if true is 1
+              "Type coercion fail!"
+            if true isnt true
+              alert "Opposite day!"
+
+            # String interpolation.
+            # You can embed a value of a variable into a String.
+            favourite_color = "Blue. No, yel..."
+            question = "Bridgekeeper: What... is your favourite color?
+                        Galahad: #{favourite_color}
+                        Bridgekeeper: Wrong!
+                        "
+            # Loops in an array
+            prisoners = ["Roger", "Roderick", "Brian"]
+            for name in prisoners
+              alert "Release #{name}"
+            for name, i in ["Roger the pickpocket", "Roderick the robber"]
+              alert "#{i} - Release #{name}"
+            release prisoner for prisoner in prisoners
+            release prisoner for prisoner in prisoners when prisoner[0] is "R"
+
+            # Loops in an object
+            names = sam: seaborn, donna: moss
+            alert("#{first} #{last}") for first, last of names
+
+            # "while", the only low-level loop.
+            num = 6
+            minstrel = while num -= 1
+              num + " Brave Sir Robin ran away"
+
+            # loop is while true
+            loop
+              return if comfirm('Are you sure?')
+
+            # until is while not
+
+            # Arrays
+            range = [1..5] # [1,2,3,4,5]
+
+            firstTwo = ["one", "two", "three"][0..1]
+            my_ = "my string"[0..2]
+
+            # Multiple assignments
+            numbers = [0..9]
+            numbers[3..5] = [-3, -4, -5]
+
+            # existence in an array.
+            words = ["rattled", "roudy", "rebbles", "ranks"]
+            alert "Stop wagging me" if "ranks" in words
+
+            # Aliases
+            @saviour = true # this.saviour = true
+
+            User::first = -> @records[0] # User.prototype.first = this.record[0]
+
+            # existential operators
+            praise if brian?
+
+            velocity = southern ? 40
+
+            # undefined or null check of return value.
+            blackKnight.getLegs()?.kick()
+
+            # undefined or null check of function itself.
+            blackKnight.getLegs().kick?()
+
+            # Class
+            class Animal
+              @find : (name) = -> # class variable(property)
+                # implementation
+
+              price : 5 # instance variable(property)
+
+              constructor : (@name) ->
+              # Instance variable "name" is declared automatically
+              # and the argument would be assigned automatically.
+
+              sell : =>
+                alert "Give me #{@price} shillings!"
+               # using '=>' means "this" in body is binded to current instance even if the property is passed as function.
+
+            animal = new Animal
+            $("#sell").click(animal.sell)
+
+            # Inheritance
+            class Parrot extends Animal
+              constructor : ->
+                super("Parrot")
+                # super is the function of the super class named as same.
+            '''
+
+  $('textarea', viewer.getWrapperElement()).attr 'disabled', 'true'
 
 # js viewer
-initViewer = ->
+initJSViewer = ->
   parent = $('#compiled').parent()[0]
   $('#compiled').remove()
   jsviewer = CodeMirror parent, {mode : 'javascript', readOnly : true}
@@ -536,7 +714,7 @@ $(document).ready ->
   $('.key.main').mousedown (event) -> event.preventDefault()
 
   initEditor()
-  initViewer()
+  initJSViewer()
 
   # setttings fitting to userAgent
   if /iPad/.test(navigator.userAgent)
@@ -555,6 +733,7 @@ $(document).ready ->
   #  2. the innnerHeight is as if it misses debug console.
   #  3. so the edit area is larger than intention.
   #  4. the position of soft key buttons is higher than intention.
+  initCheatViewer()
 
   document.body.onresize = layoutEditor
 

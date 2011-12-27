@@ -133,7 +133,21 @@
   z-index: -1;
 }
 
+.sticky .CodeMirror {
+  font-size: 10pt;
+  height: 100%;
+}
+
+.sticky .CodeMirror-scroll {
+  height: 100%;
+  background: rgb(254, 247, 133);
+  z-index: 0;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
 #tips {
+  font-size: 10pt;
   height: 100%;
   background: rgb(254, 247, 133);
   z-index: 0;
