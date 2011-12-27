@@ -79,22 +79,17 @@ clickSaveas = ->
   resetSelects()
 
 
-iOSKeyboardHeight = 307
-
-
 layoutEditor = ->
   restHeight = window.innerHeight -
     $('.ui-header').outerHeight(true) -
     $('#error').outerHeight(true) -
-    ($(editor.element).outerHeight(true) - $(editor.element).height())
+    ($(editor.element).outerHeight(true) - $(editor.element).height()) -
+    $('#backofkeyboard').height()
   if $('#keyboard-on')[0].checked
     $('#keys').css('display', 'block')
-    keybackHeight = iOSKeyboardHeight + $('#keys').outerHeight(true)
+    restHeight -= $('#keys').outerHeight(true)
   else
-    keybackHeight = iOSKeyboardHeight
     $('#keys').css('display', 'none')
-  restHeight -= keybackHeight
-  $('#keyback').height(keybackHeight + 'px')
   restHeight = Math.max(restHeight, 12)
   editor.setHeight restHeight + 'px'
   jsElement = jsviewer.getWrapperElement()
@@ -708,10 +703,17 @@ $(document).ready ->
 
   # jQuery Mobile setting
   $('#editorpage').addBackBtn = false # no back button on top page.
+  $('#editorpage').bind 'pageshow', (e) ->
+    if $('#keyboard-on')[0].checked
+      $('#keys').css('display', 'block')
+  $('#editorpage').bind 'pagehide', (e) ->
+    if $('#keyboard-on')[0].checked
+      $('#keys').css('display', 'none')
 
   # prevents native soft keyboard to slip down when button was released.
   # You may not need this hack when using CodeMirror.
   $('.key.main').mousedown (event) -> event.preventDefault()
+
 
   initEditor()
   initJSViewer()
@@ -724,8 +726,8 @@ $(document).ready ->
     $('#editorpage').live 'pageshow', (event, ui) -> editor.refresh()
     $('#compiledpage').live 'pageshow', (event, ui) -> jsviewer.refresh()
 
-  $('#keyback').css('display', 'block')
-  # keyback is not showed until layout for the beauty.
+  $('#backofkeyboard').css('display', 'block')
+  # backofkeyboard is not showed until layout for the beauty.
   layoutEditor()
   # problem
   #  When debug console is enabled on iPad, just after loading,

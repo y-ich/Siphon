@@ -1,5 +1,5 @@
 (function() {
-  var KeyFSM, KeyState, appCache, appCacheUpdate, capitalize, clickSaveas, clipboard, currentFile, editor, evalCS, fileOptions, fireKeyEvent, fireTextEvent, iOSKeyboardHeight, initCheatViewer, initEditor, initJSViewer, jssnippet, jsviewer, keyActive, keyCodes, keyInactive, keySound, keySubActive, keySubInactive, layoutEditor, menuBar, navigationBar, onKeyEventforiPad, pos2xy, resetSelect, resetSelects, run, settingMenu, softKeyboard, xy2pos;
+  var KeyFSM, KeyState, appCache, appCacheUpdate, capitalize, clickSaveas, clipboard, currentFile, editor, evalCS, fileOptions, fireKeyEvent, fireTextEvent, initCheatViewer, initEditor, initJSViewer, jssnippet, jsviewer, keyActive, keyCodes, keyInactive, keySound, keySubActive, keySubInactive, layoutEditor, menuBar, navigationBar, onKeyEventforiPad, pos2xy, resetSelect, resetSelects, run, settingMenu, softKeyboard, xy2pos;
 
   editor = null;
 
@@ -74,20 +74,15 @@
     return resetSelects();
   };
 
-  iOSKeyboardHeight = 307;
-
   layoutEditor = function() {
-    var jsElement, keybackHeight, restHeight;
-    restHeight = window.innerHeight - $('.ui-header').outerHeight(true) - $('#error').outerHeight(true) - ($(editor.element).outerHeight(true) - $(editor.element).height());
+    var jsElement, restHeight;
+    restHeight = window.innerHeight - $('.ui-header').outerHeight(true) - $('#error').outerHeight(true) - ($(editor.element).outerHeight(true) - $(editor.element).height()) - $('#backofkeyboard').height();
     if ($('#keyboard-on')[0].checked) {
       $('#keys').css('display', 'block');
-      keybackHeight = iOSKeyboardHeight + $('#keys').outerHeight(true);
+      restHeight -= $('#keys').outerHeight(true);
     } else {
-      keybackHeight = iOSKeyboardHeight;
       $('#keys').css('display', 'none');
     }
-    restHeight -= keybackHeight;
-    $('#keyback').height(keybackHeight + 'px');
     restHeight = Math.max(restHeight, 12);
     editor.setHeight(restHeight + 'px');
     jsElement = jsviewer.getWrapperElement();
@@ -583,6 +578,12 @@
   $(document).ready(function() {
     appCacheUpdate();
     $('#editorpage').addBackBtn = false;
+    $('#editorpage').bind('pageshow', function(e) {
+      if ($('#keyboard-on')[0].checked) return $('#keys').css('display', 'block');
+    });
+    $('#editorpage').bind('pagehide', function(e) {
+      if ($('#keyboard-on')[0].checked) return $('#keys').css('display', 'none');
+    });
     $('.key.main').mousedown(function(event) {
       return event.preventDefault();
     });
@@ -598,7 +599,7 @@
         return jsviewer.refresh();
       });
     }
-    $('#keyback').css('display', 'block');
+    $('#backofkeyboard').css('display', 'block');
     layoutEditor();
     initCheatViewer();
     softKeyboard();
