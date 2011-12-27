@@ -735,7 +735,8 @@ $(document).ready ->
   #  4. the position of soft key buttons is higher than intention.
   initCheatViewer()
 
-  document.body.onresize = layoutEditor
+#  document.body.onresize = layoutEditor
+# layoutEditor on onresize often make transition ugly.
 
   softKeyboard()
   navigationBar()

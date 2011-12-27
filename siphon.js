@@ -601,7 +601,6 @@
     $('#keyback').css('display', 'block');
     layoutEditor();
     initCheatViewer();
-    document.body.onresize = layoutEditor;
     softKeyboard();
     navigationBar();
     menuBar();
