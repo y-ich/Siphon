@@ -26,15 +26,6 @@ max = (l) -> Math.max.apply(null, l)
 # code snippets
 #
 
-# changes page to 'runpage' if the program uses 'canvas' and evals it.
-run = ->
-  source = markupEditor.getValue()
-  document.location = '#runpage' if /canvas/.test source or /svg/.test source
-  try
-    eval CoffeeScript.compile scriptEditor.getValue()
-  catch error
-    alert error.message
-
 evalCS = (str) ->
     try
       jssnippet = CoffeeScript.compile str, bare : on
@@ -693,10 +684,6 @@ menuBar = ->
     $('#import').selectmenu('refresh')
 
 
-navigationBar = ->
-  $('.run').click -> run()
-
-
 settingMenu = ->
   $('#keyboard-on').change layoutEditor
 
@@ -713,7 +700,6 @@ $(document).ready ->
   # You may not need this hack when using CodeMirror.
   $('.key.main').mousedown (event) -> event.preventDefault()
   $("div[data-role='page'].editorpage").bind 'pageshow', ->
-    console.log 'pass'
     if $('#keyboard-on')[0].checked
       $('#keys').css('display', 'block')
     else
@@ -722,12 +708,19 @@ $(document).ready ->
   $("div[data-role='page']:not(.editorpage)").bind 'pageshow', ->
     $('#keys').css('display', 'none')
 
+  $('#runpage').bind 'pageshow', ->
+    try
+      eval CoffeeScript.compile scriptEditor.getValue()
+    catch error
+      alert error.message
+
   initScriptEditor()
   initMarkupEditor()
 
   # setttings fitting to userAgent
   if /iPad/.test(navigator.userAgent)
     $('#keyboard-on')[0].checked = true
+    $('#keys').css('display', 'block')
   else
     # for desktop safari or chrome
     $('#scriptpage').bind 'pageshow', -> scriptEditor.refresh()
@@ -748,7 +741,6 @@ $(document).ready ->
 # layoutEditor on onresize often make transition ugly.
 
   softKeyboard()
-  navigationBar()
   menuBar()
   settingMenu()
 

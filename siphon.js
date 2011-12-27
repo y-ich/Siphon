@@ -1,5 +1,5 @@
 (function() {
-  var KeyFSM, KeyState, appCache, appCacheUpdate, capitalize, clickSaveas, clipboard, currentFile, evalCS, fileOptions, fireKeyEvent, fireTextEvent, initCheatViewer, initMarkupEditor, initScriptEditor, jssnippet, keyActive, keyCodes, keyInactive, keySound, keySubActive, keySubInactive, layoutEditor, markupEditor, max, menuBar, navigationBar, onKeyEventforiPad, pos2xy, resetSelect, resetSelects, run, scriptEditor, settingMenu, softKeyboard, xy2pos;
+  var KeyFSM, KeyState, appCache, appCacheUpdate, capitalize, clickSaveas, clipboard, currentFile, evalCS, fileOptions, fireKeyEvent, fireTextEvent, initCheatViewer, initMarkupEditor, initScriptEditor, jssnippet, keyActive, keyCodes, keyInactive, keySound, keySubActive, keySubInactive, layoutEditor, markupEditor, max, menuBar, onKeyEventforiPad, pos2xy, resetSelect, resetSelects, scriptEditor, settingMenu, softKeyboard, xy2pos;
 
   scriptEditor = null;
 
@@ -15,19 +15,6 @@
 
   max = function(l) {
     return Math.max.apply(null, l);
-  };
-
-  run = function() {
-    var source;
-    source = markupEditor.getValue();
-    if (/canvas/.test(source || /svg/.test(source))) {
-      document.location = '#runpage';
-    }
-    try {
-      return eval(CoffeeScript.compile(scriptEditor.getValue()));
-    } catch (error) {
-      return alert(error.message);
-    }
   };
 
   evalCS = function(str) {
@@ -569,12 +556,6 @@
     });
   };
 
-  navigationBar = function() {
-    return $('.run').click(function() {
-      return run();
-    });
-  };
-
   settingMenu = function() {
     $('#keyboard-on').change(layoutEditor);
     return $('#key-sound').change(function() {
@@ -589,7 +570,6 @@
       return event.preventDefault();
     });
     $("div[data-role='page'].editorpage").bind('pageshow', function() {
-      console.log('pass');
       if ($('#keyboard-on')[0].checked) {
         return $('#keys').css('display', 'block');
       } else {
@@ -599,10 +579,18 @@
     $("div[data-role='page']:not(.editorpage)").bind('pageshow', function() {
       return $('#keys').css('display', 'none');
     });
+    $('#runpage').bind('pageshow', function() {
+      try {
+        return eval(CoffeeScript.compile(scriptEditor.getValue()));
+      } catch (error) {
+        return alert(error.message);
+      }
+    });
     initScriptEditor();
     initMarkupEditor();
     if (/iPad/.test(navigator.userAgent)) {
       $('#keyboard-on')[0].checked = true;
+      $('#keys').css('display', 'block');
     } else {
       $('#scriptpage').bind('pageshow', function() {
         return scriptEditor.refresh();
@@ -615,7 +603,6 @@
     layoutEditor();
     initCheatViewer();
     softKeyboard();
-    navigationBar();
     menuBar();
     settingMenu();
     return scriptEditor.compile();

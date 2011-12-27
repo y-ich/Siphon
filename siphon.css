@@ -54,6 +54,7 @@ div[data-role="content"] {
 		padding-left: 7px;
 		position: fixed;
 		bottom: 307px;
+		display: none;
 }
 
 .clear {
