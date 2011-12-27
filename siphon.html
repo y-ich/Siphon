@@ -30,7 +30,7 @@
 		<script src="lib/util/searchcursor.js"></script>
 		<script src="lib/util/dialog.js"></script>
 		<script src="mode/coffeescript/coffeescript.js"></script>
-		<script src="mode/javascript/javascript.js"></script>
+		<script src="mode/xml/xml.js"></script>
 		<!-- CoffeeScriptコンパイラ -->
 		<script src="http://jashkenas.github.com/coffee-script/extras/coffee-script.js"></script>
 		<script type="text/javascript" src="siphon.js"></script>
@@ -56,9 +56,9 @@
   </head>
 
   <body>
-		<div data-role="page" id="editorpage" data-theme="c">
+		<div data-role="page" id="scriptpage" data-theme="c" class="editorpage">
 			<div data-role="header" class="ui-bar" data-theme="c" data-type="horizontal">
-				<div data-role="controlgroup" data-type="horizontal">
+				<div id="menu" data-role="controlgroup" data-type="horizontal">
 					<select id="open" data-icon="grid" data-iconpos="left">
 						<option>Open...</option>
 					</select>
@@ -79,8 +79,8 @@
 				</div>
 				<div data-role="navbar">
 					<ul>
-						<li><a href="#editorpage" class="ui-btn-active ui-state-persist">Editor</a></li>
-						<li><a href="#compiledpage">Compiled Code</a></li>
+						<li><a href="#scriptpage" class="ui-btn-active ui-state-persist">Script</a></li>
+						<li><a href="#markuppage">Markup</a></li>
 						<li><a href="#" class="run">Run</a></li>
 						<li><a href="#settingpage">Setting</a></li>
 						<li><a href="#smooth" data-transition="fade">References</a></li>
@@ -88,7 +88,7 @@
 				</div>
 			</div>
 			<div data-role="content" id="main">
-				<div id="editor"></div>
+				<div id="scripteditor"></div>
 				<div id="error"></div>
 				<div id="backofkeyboard" class="ui-grid-a">
 					<div class="ui-block-a">
@@ -136,13 +136,13 @@
 			</div>
 		</div>
 
-		<div data-role="page" id="compiledpage" data-theme="c">
+		<div data-role="page" id="markuppage" data-theme="c" class="editorpage">
 			<div data-role="header" data-theme="c">
-				<h1>Compiled JavaScript Code</h1>
+				<h1>Markup</h1>
 				<div data-role="navbar">
 					<ul>
-						<li><a href="#editorpage">Editor</a></li>
-						<li><a href="#compiledpage" class="ui-btn-active ui-state-persist">Compiled Code</a></li>
+						<li><a href="#scriptpage">Script</a></li>
+						<li><a href="#markuppage" class="ui-btn-active ui-state-persist">Markup</a></li>
 						<li><a href="#" class="run">Run</a></li>
 						<li><a href="#settingpage">Setting</a></li>
 						<li><a href="#smooth">References</a></li>
@@ -150,7 +150,7 @@
 				</div>
 			</div>
 			<div data-role="content">
-				<pre id="compiled"></pre>
+				<div id="markupeditor"></div>
 			</div>
 		</div>
 
@@ -159,8 +159,8 @@
 				<h1>Execution</h1>
 				<div data-role="navbar">
 					<ul>
-						<li><a href="#editorpage">Editor</a></li>
-						<li><a href="#compiledpage" >Compiled Code</a></li>
+						<li><a href="#scriptpage">Script</a></li>
+						<li><a href="#markuppage" >Markup</a></li>
 						<li><a href="#" class="run ui-btn-active ui-state-persist">Run</a></li>
 						<li><a href="#settingpage">Setting</a></li>
 						<li><a href="#smooth">References</a></li>
@@ -168,7 +168,6 @@
 				</div>
 			</div>
 			<div data-role="content">
-				<canvas id="canvas"></canvas>
 			</div>
 		</div>
 
@@ -177,8 +176,8 @@
 				<h1>Siphon Setting</h1>
 				<div data-role="navbar">
 					<ul>
-						<li><a href="#editorpage">Editor</a></li>
-						<li><a href="#compiledpage" >Compiled Code</a></li>
+						<li><a href="#scriptpage">Script</a></li>
+						<li><a href="#markuppage" >Markup</a></li>
 						<li><a href="#" class="run">Run</a></li>
 						<li><a href="#settingpage" class="ui-btn-active ui-state-persist">Setting</a></li>
 						<li><a href="#smooth">References</a></li>
@@ -201,7 +200,7 @@
 				<h1>Smooth CoffeeScript</h1>
 				<div data-role="navbar">
 					<ul>
-						<li><a href="#editorpage">Editor</a></li>
+						<li><a href="#scriptpage">Script</a></li>
 						<li></li>
 						<li></li>
 						<li><a href="#underscore" data-transition="flip">Underscore.js</a></li>
@@ -219,7 +218,7 @@
 				<h1>Underscore.js</h1>
 				<div data-role="navbar">
 					<ul>
-						<li><a href="#editorpage">Editor</a></li>
+						<li><a href="#scriptpage">Script</a></li>
 						<li></li>
 						<li></li>
 						<li><a href="#underscore" class="ui-btn-active ui-state-persist">Underscore.js</a></li>

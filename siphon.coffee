@@ -7,8 +7,8 @@
 #
 
 # editor object
-editor = null
-jsviewer = null
+scriptEditor = null
+markupEditor = null
 clipboard = null
 jssnippet = ''
 
@@ -20,6 +20,7 @@ jssnippet = ''
 # returns a string with the first character capitalized.
 capitalize = (word) -> word.substring(0, 1).toUpperCase() + word.substring(1)
 
+max = (l) -> Math.max.apply(null, l)
 
 #
 # code snippets
@@ -27,9 +28,10 @@ capitalize = (word) -> word.substring(0, 1).toUpperCase() + word.substring(1)
 
 # changes page to 'runpage' if the program uses 'canvas' and evals it.
 run = ->
-  document.location = '#runpage' if /canvas/.test jsviewer.getValue()
+  source = markupEditor.getValue()
+  document.location = '#runpage' if /canvas/.test source or /svg/.test source
   try
-    eval jsviewer.getValue()
+    eval CoffeeScript.compile scriptEditor.getValue()
   catch error
     alert error.message
 
@@ -75,27 +77,19 @@ resetSelects = ->
 clickSaveas = ->
   currentFile = prompt 'filename:'
   return if not currentFile?
-  localStorage.setItem(currentFile, editor.getValue())
+  localStorage.setItem(currentFile, scriptEditor.getValue())
   resetSelects()
 
 
 layoutEditor = ->
   restHeight = window.innerHeight -
-    $('.ui-header').outerHeight(true) -
-    $('#error').outerHeight(true) -
-    ($(editor.element).outerHeight(true) - $(editor.element).height()) -
+    max($.makeArray($("div[data-role='header']").map(-> $(this).outerHeight(true)))) -
+    ($(scriptEditor.element).outerHeight(true) - $(scriptEditor.element).height()) -
     $('#backofkeyboard').height()
-  if $('#keyboard-on')[0].checked
-    $('#keys').css('display', 'block')
-    restHeight -= $('#keys').outerHeight(true)
-  else
-    $('#keys').css('display', 'none')
-  restHeight = Math.max(restHeight, 12)
-  editor.setHeight restHeight + 'px'
-  jsElement = jsviewer.getWrapperElement()
-  jsviewer.setHeight (window.innerHeight -
-    $('.ui-header').outerHeight(true) -
-    ($(jsElement).outerHeight(true) - $(jsElement).height())) + 'px'
+  restHeight -= $('#keys').outerHeight(true) if $('#keyboard-on')[0].checked
+  markupEditor.setHeight restHeight + 'px'
+  restHeight -= $('#error').outerHeight(true)
+  scriptEditor.setHeight restHeight + 'px'
 
 
 keyCodes =
@@ -358,30 +352,30 @@ appCacheUpdate = ->
     console.log e
 
 
-initEditor = ->
-  editor = CodeMirror $('#editor')[0],
+initScriptEditor = ->
+  scriptEditor = CodeMirror $('#scripteditor')[0],
     value :  "#Select a line below by tapping the line and pressing cntrl + l.\n#And press cntrl + r to run the line and see the result.\n1 + 1"
     matchBrackets: true
     mode : 'coffeescript'
     lineNumbers: true
-    onChange : -> editor.compile()
+    onChange : -> scriptEditor.compile()
     onKeyEvent : onKeyEventforiPad
 
   # In order to improve unexpected scroll during inputting on iPad.
-  editor.bodyTop = 0
-  ta = editor.getInputField()
+  scriptEditor.bodyTop = 0
+  ta = scriptEditor.getInputField()
   ta.addEventListener 'mousedown', ->
-    editor.bodyTop = document.body.scrollTop
+    scriptEditor.bodyTop = document.body.scrollTop
   ta.addEventListener 'focus', ->
-    window.scrollTo 0, editor.bodyTop
+    window.scrollTo 0, scriptEditor.bodyTop
 
-  editor.element = editor.getWrapperElement()
-  editor.setHeight = (str) ->
+  scriptEditor.element = scriptEditor.getWrapperElement()
+  scriptEditor.setHeight = (str) ->
     this.getScrollerElement().style.height = str
     this.refresh()
-  editor.compile = ->
+  scriptEditor.compile = ->
     try
-      jsviewer.setValue CoffeeScript.compile @getValue(), bare : on
+      CoffeeScript.compile @getValue() # syntax check
       $('#error').text('')
     catch error
       $('#error').text(error.message)
@@ -392,188 +386,200 @@ initCheatViewer = ->
   viewer = CodeMirror parent,
     mode : 'coffeescript'
     readOnly : true
-    value : '''
-            # CoffeeScript Cheat Sheet
-            # based on "The Little Book on CoffeeScript".
+    value :
+      '''
+      # CoffeeScript Cheat Sheet
+      # based on "The Little Book on CoffeeScript".
 
-            # A comment
+      # A comment
 
-            ###
-              A multiline comment
-            ###
+      ###
+      A multiline comment
+      ###
 
-            # No need to declare a variable. Just assign into it.
-            myVariable = "test"
+      # No need to declare a variable. Just assign into it.
+      myVariable = "test"
 
-            # To export a variable out of the code,
-            # make a property in a global object.
-            exports = this
-            exports.myVariable = "foo-bar"
+      # To export a variable out of the code,
+      # make a property in a global object.
+      exports = this
+      exports.myVariable = "foo-bar"
 
-            # "->", called "arrow", means start of function definition.
-            func = -> "bar"
+      # "->", called "arrow", means start of function definition.
+      func = -> "bar"
 
-            # INDENTED lines are recognized as a block.
-            func  ->
-              # An extra line
-              "bar"
+      # INDENTED lines are recognized as a block.
+      func  ->
+        # An extra line
+        "bar"
 
-            # variables in parentheses before the arrow are arguments.
-            times = (a, b) -> a * b
+      # variables in parentheses before the arrow are arguments.
+      times = (a, b) -> a * b
 
-            # equations in parentheses give default values
-            # if an argument is omitted when invoking.
-            times = (a = 1, b = 2) -> a * b
+      # equations in parentheses give default values
+      # if an argument is omitted when invoking.
+      times = (a = 1, b = 2) -> a * b
 
-            # Variable arguments. nums should be an array.
-            sum = (nums...) ->
-              result = 0
-              nums.forEach (n) -> result += n
-              result
+      # Variable arguments. nums should be an array.
+      sum = (nums...) ->
+        result = 0
+        nums.forEach (n) -> result += n
+        result
 
-            # function name + argument(s) is function invocation.
-            # parentheses are optional unless no argument.
-            alert("Howdy!")
-            alert inspect("Howdy!")
+      # function name + argument(s) is function invocation.
+      # parentheses are optional unless no argument.
+      alert("Howdy!")
+      alert inspect("Howdy!")
 
-            # '=>', called "fat arrow", also means start of function definition,
-            # except that "this" in the fucntion body indicates local context
-            # of the function definition.
-            this.clickHandler = -> alert "clicked"
-            element.addEventListener "click", (e) => this.clickHandler(e)
+      # '=>', called "fat arrow", also means start of function definition,
+      # except that "this" in the fucntion body indicates local context
+      # of the function definition.
+      this.clickHandler = -> alert "clicked"
+      element.addEventListener "click", (e) => this.clickHandler(e)
 
-            # Object literals. Braces are optional.
-            object1 = {one : 1, two : 2}
-            object2 = one : 1, two : 2
-            object3 =
-              one : 1
-              two : 2
+      # Object literals. Braces are optional.
+      object1 = {one : 1, two : 2}
+      object2 = one : 1, two : 2
+      object3 =
+        one : 1
+        two : 2
 
-            # Array literals. Brackets are mandatory.
-            array1 = [1, 2, 3]
-            array2 = [
-              1
-              2
-              3
-            ]
+      # Array literals. Brackets are mandatory.
+      array1 = [1, 2, 3]
+      array2 = [
+        1
+        2
+        3
+      ]
 
-            # Conditional expression
-            if true == true
-              "We're ok"
-            if true != true then "Panic"
-            if 1 > 0 then "Ok" else "Y2K!"
-            alert "It's cold!" if heat %lt; 5
+      # Conditional expression
+      if true == true
+        "We're ok"
+      if true != true then "Panic"
+      if 1 > 0 then "Ok" else "Y2K!"
+      alert "It's cold!" if heat %lt; 5
 
-            # negate operator
-            if not true then "Panic"
+      # negate operator
+      if not true then "Panic"
 
-            # unless
-            unless true
-              "Panic"
+      # unless
+      unless true
+        "Panic"
 
-            # is/isnt statement
-            if true is 1
-              "Type coercion fail!"
-            if true isnt true
-              alert "Opposite day!"
+      # is/isnt statement
+      if true is 1
+        "Type coercion fail!"
+      if true isnt true
+        alert "Opposite day!"
 
-            # String interpolation.
-            # You can embed a value of a variable into a String.
-            favourite_color = "Blue. No, yel..."
-            question = "Bridgekeeper: What... is your favourite color?
-                        Galahad: #{favourite_color}
-                        Bridgekeeper: Wrong!
-                        "
-            # Loops in an array
-            prisoners = ["Roger", "Roderick", "Brian"]
-            for name in prisoners
-              alert "Release #{name}"
-            for name, i in ["Roger the pickpocket", "Roderick the robber"]
-              alert "#{i} - Release #{name}"
-            release prisoner for prisoner in prisoners
-            release prisoner for prisoner in prisoners when prisoner[0] is "R"
+      # String interpolation.
+      # You can embed a value of a variable into a String.
+      favourite_color = "Blue. No, yel..."
+      question = "Bridgekeeper: What... is your favourite color?
+                  Galahad: #{favourite_color}
+                  Bridgekeeper: Wrong!
+                  "
+      # Loops in an array
+      prisoners = ["Roger", "Roderick", "Brian"]
+      for name in prisoners
+        alert "Release #{name}"
+      for name, i in ["Roger the pickpocket", "Roderick the robber"]
+        alert "#{i} - Release #{name}"
+      release prisoner for prisoner in prisoners
+      release prisoner for prisoner in prisoners when prisoner[0] is "R"
 
-            # Loops in an object
-            names = sam: seaborn, donna: moss
-            alert("#{first} #{last}") for first, last of names
+      # Loops in an object
+      names = sam: seaborn, donna: moss
+      alert("#{first} #{last}") for first, last of names
 
-            # "while", the only low-level loop.
-            num = 6
-            minstrel = while num -= 1
-              num + " Brave Sir Robin ran away"
+      # "while", the only low-level loop.
+      num = 6
+      minstrel = while num -= 1
+        num + " Brave Sir Robin ran away"
 
-            # loop is while true
-            loop
-              return if comfirm('Are you sure?')
+      # loop is while true
+      loop
+        return if comfirm('Are you sure?')
 
-            # until is while not
+      # until is while not
 
-            # Arrays
-            range = [1..5] # [1,2,3,4,5]
+      # Arrays
+      range = [1..5] # [1,2,3,4,5]
 
-            firstTwo = ["one", "two", "three"][0..1]
-            my_ = "my string"[0..2]
+      firstTwo = ["one", "two", "three"][0..1]
+      my_ = "my string"[0..2]
 
-            # Multiple assignments
-            numbers = [0..9]
-            numbers[3..5] = [-3, -4, -5]
+      # Multiple assignments
+      numbers = [0..9]
+      numbers[3..5] = [-3, -4, -5]
 
-            # existence in an array.
-            words = ["rattled", "roudy", "rebbles", "ranks"]
-            alert "Stop wagging me" if "ranks" in words
+      # existence in an array.
+      words = ["rattled", "roudy", "rebbles", "ranks"]
+      alert "Stop wagging me" if "ranks" in words
 
-            # Aliases
-            @saviour = true # this.saviour = true
+      # Aliases
+      @saviour = true # this.saviour = true
 
-            User::first = -> @records[0] # User.prototype.first = this.record[0]
+      User::first = -> @records[0] # User.prototype.first = this.record[0]
 
-            # existential operators
-            praise if brian?
+      # existential operators
+      praise if brian?
 
-            velocity = southern ? 40
+      velocity = southern ? 40
 
-            # undefined or null check of return value.
-            blackKnight.getLegs()?.kick()
+      # undefined or null check of return value.
+      blackKnight.getLegs()?.kick()
 
-            # undefined or null check of function itself.
-            blackKnight.getLegs().kick?()
+      # undefined or null check of function itself.
+      blackKnight.getLegs().kick?()
 
-            # Class
-            class Animal
-              @find : (name) = -> # class variable(property)
-                # implementation
+      # Class
+      class Animal
+        @find : (name) = -> # class variable(property)
+          # implementation
 
-              price : 5 # instance variable(property)
+        price : 5 # instance variable(property)
 
-              constructor : (@name) ->
-              # Instance variable "name" is declared automatically
-              # and the argument would be assigned automatically.
+        constructor : (@name) ->
+        # Instance variable "name" is declared automatically
+        # and the argument would be assigned automatically.
 
-              sell : =>
-                alert "Give me #{@price} shillings!"
-               # using '=>' means "this" in body is binded to current instance even if the property is passed as function.
+        sell : =>
+          alert "Give me #{@price} shillings!"
+          # using '=>' means "this" in body is binded to current instance even if the property is passed as function.
 
-            animal = new Animal
-            $("#sell").click(animal.sell)
+      animal = new Animal
+      $("#sell").click(animal.sell)
 
-            # Inheritance
-            class Parrot extends Animal
-              constructor : ->
-                super("Parrot")
-                # super is the function of the super class named as same.
-            '''
+      # Inheritance
+      class Parrot extends Animal
+        constructor : ->
+          super("Parrot")
+          # super is the function of the super class named as same.
+      '''
 
   $('textarea', viewer.getWrapperElement()).attr 'disabled', 'true'
 
 # js viewer
-initJSViewer = ->
-  parent = $('#compiled').parent()[0]
-  $('#compiled').remove()
-  jsviewer = CodeMirror parent, {mode : 'javascript', readOnly : true}
-  jsviewer.setHeight = (str) ->
+initMarkupEditor = ->
+  parent = $('#markupeditor').parent()[0]
+  $('#markupeditor').remove()
+  markupEditor = CodeMirror parent,
+    value :
+      '''
+      <!-- The HTML snippet here will be injected into the content of Run page when executing the script -->
+      <canvas id="canvas"></canvas>
+      <svg id="svg"></svg>
+      '''
+
+    matchBrackets: true
+    mode : {name : 'xml', htmlMode : true}
+    lineNumbers: true
+    onKeyEvent : onKeyEventforiPad
+
+  markupEditor.setHeight = (str) ->
     this.getScrollerElement().style.height = str
     this.refresh()
-  $('textarea', jsviewer.getWrapperElement()).attr 'disabled', 'true'
 
 
 onKeyEventforiPad = (instance, e) ->
@@ -590,13 +596,13 @@ onKeyEventforiPad = (instance, e) ->
     switch e.keyCode
       when 88 # 'X'.charCodeAt(0)
         if e.type is 'keydown'
-          clipboard = editor.getSelection()
-          editor.replaceSelection('')
+          clipboard = scriptEditor.getSelection()
+          scriptEditor.replaceSelection('')
         e.stop()
         return true
       when 67 # 'C'.charCodeAt(0)
         if e.type is 'keydown'
-          clipboard = editor.getSelection()
+          clipboard = scriptEditor.getSelection()
         e.stop()
         return true
       when 86 # 'V'.charCodeAt(0)
@@ -608,16 +614,16 @@ onKeyEventforiPad = (instance, e) ->
     switch e.keyCode
       when 76 # 'L'.charCodeAt(0)
         if e.type is 'keydown'
-          line = editor.getCursor().line
-          editor.setSelection {line : line, ch : 0},
-            {line : line, ch : editor.getLine(line).length}
+          line = scriptEditor.getCursor().line
+          scriptEditor.setSelection {line : line, ch : 0},
+            {line : line, ch : scriptEditor.getLine(line).length}
         e.stop()
         return true
       when 82 # 'R'.charCodeAt(0)
         if e.type is 'keydown'
-          clipboard = editor.getSelection()
+          clipboard = scriptEditor.getSelection()
           result = evalCS(clipboard)
-          editor.replaceSelection result.toString() if result?
+          scriptEditor.replaceSelection result.toString() if result?
         e.stop()
         return true
   return false
@@ -640,14 +646,14 @@ softKeyboard = ->
 
 menuBar = ->
   $('#new').click ->
-    editor.setValue('')
+    scriptEditor.setValue('')
     currentFile = null
 
   $('#save').click ->
     if not currentFile? or currentFile is ''
       clickSaveas()
     else
-      localStorage.setItem(currentFile, editor.getValue())
+      localStorage.setItem(currentFile, scriptEditor.getValue())
       alert '"' + currentFile + '" was saved.'
 
   $('#saveas').click clickSaveas
@@ -660,7 +666,7 @@ menuBar = ->
   $('#open').change ->
     currentFile = $('#open')[0].value
     if currentFile? and currentFile isnt ''
-      editor.setValue localStorage[$('#open')[0].value]
+      scriptEditor.setValue localStorage[$('#open')[0].value]
     $('#open')[0].selectedIndex = 0 # index = 0 means "Open..."
     $('#open').selectmenu('refresh')
 
@@ -697,34 +703,35 @@ settingMenu = ->
   $('#key-sound').change ->
     keySound.enable = if this.checked then true else false
 
-
 $(document).ready ->
   appCacheUpdate()
 
   # jQuery Mobile setting
-  $('#editorpage').addBackBtn = false # no back button on top page.
-  $('#editorpage').bind 'pageshow', (e) ->
-    if $('#keyboard-on')[0].checked
-      $('#keys').css('display', 'block')
-  $('#editorpage').bind 'pagehide', (e) ->
-    if $('#keyboard-on')[0].checked
-      $('#keys').css('display', 'none')
+  $('#scriptpage').addBackBtn = false # no back button on top page.
 
   # prevents native soft keyboard to slip down when button was released.
   # You may not need this hack when using CodeMirror.
   $('.key.main').mousedown (event) -> event.preventDefault()
+  $("div[data-role='page'].editorpage").bind 'pageshow', ->
+    console.log 'pass'
+    if $('#keyboard-on')[0].checked
+      $('#keys').css('display', 'block')
+    else
+      $('#keys').css('display', 'none')
 
+  $("div[data-role='page']:not(.editorpage)").bind 'pageshow', ->
+    $('#keys').css('display', 'none')
 
-  initEditor()
-  initJSViewer()
+  initScriptEditor()
+  initMarkupEditor()
 
   # setttings fitting to userAgent
   if /iPad/.test(navigator.userAgent)
     $('#keyboard-on')[0].checked = true
   else
     # for desktop safari or chrome
-    $('#editorpage').live 'pageshow', (event, ui) -> editor.refresh()
-    $('#compiledpage').live 'pageshow', (event, ui) -> jsviewer.refresh()
+    $('#scriptpage').bind 'pageshow', -> scriptEditor.refresh()
+    $('#markuppage').bind 'pageshow', -> markupEditor.refresh()
 
   $('#backofkeyboard').css('display', 'block')
   # backofkeyboard is not showed until layout for the beauty.
@@ -745,4 +752,4 @@ $(document).ready ->
   menuBar()
   settingMenu()
 
-  editor.compile()
+  scriptEditor.compile()

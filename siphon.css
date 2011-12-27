@@ -19,6 +19,16 @@
 		width: 100%;
 }
 
+#menu {
+		height: 39px;
+}
+
+div[data-role="content"] {
+		margin: 0;
+		padding: 0;
+		width: 100%;
+}
+
 .CodeMirror {
 		font-size: 12pt;
 }
@@ -44,7 +54,6 @@
 		padding-left: 7px;
 		position: fixed;
 		bottom: 307px;
-		display: none;
 }
 
 .clear {
