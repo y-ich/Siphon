@@ -14,6 +14,7 @@ window.siphon.log = (obj) ->
 
 # editor object
 scriptEditor = null
+cheatViewer = null
 markupEditor = null
 clipboard = null
 jssnippet = ''
@@ -70,11 +71,17 @@ resetSelects = ->
   resetSelect 'delete'
 
 
+formatForSave = ->
+  data =
+    script : scriptEditor.getValue()
+    markup : markupEditor.getValue()
+  JSON.stringify data
+
 # dispatch for saveas
 clickSaveas = ->
   currentFile = prompt 'filename:'
   return if not currentFile?
-  localStorage.setItem(currentFile, scriptEditor.getValue())
+  localStorage.setItem currentFile, formatForSave()
   resetSelects()
 
 
@@ -399,7 +406,7 @@ initScriptEditor = ->
 initCheatViewer = ->
   parent = $('#cheat').parent()[0]
   $('#cheat').remove()
-  viewer = CodeMirror parent,
+  cheatViewer = CodeMirror parent,
     mode : 'coffeescript'
     readOnly : true
     value :
@@ -574,7 +581,7 @@ initCheatViewer = ->
           # super is the function of the super class named as same.
       '''
 
-  $('textarea', viewer.getWrapperElement()).attr 'disabled', 'true'
+  $('textarea', cheatViewer.getWrapperElement()).attr 'disabled', 'true'
 
 # js viewer
 initMarkupEditor = ->
@@ -672,20 +679,26 @@ menuBar = ->
     if not currentFile? or currentFile is ''
       clickSaveas()
     else
-      localStorage.setItem(currentFile, scriptEditor.getValue())
+      localStorage.setItem currentFile, formatForSave()
       alert '"' + currentFile + '" was saved.'
 
   $('#saveas').click clickSaveas
 
   $('#about').click ->
-    alert 'Siphon\nCoffeeScript Programming Environment\nVersion 0.6.0\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.'
+    alert 'Siphon\nCoffeeScript Programming Environment\nVersion 0.6.1\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.'
 
   resetSelects() # "Open...", and "Delete..." menus
 
   $('#open').change ->
     currentFile = $('#open')[0].value
     if currentFile? and currentFile isnt ''
-      scriptEditor.setValue localStorage[$('#open')[0].value]
+      try
+        data = JSON.parse localStorage[$('#open')[0].value]
+        scriptEditor.setValue data.script if data.script?
+        markupEditor.setValue data.markup if data.markup?
+      catch e
+        scriptEditor.setValue localStorage[$('#open')[0].value]
+        markupEditor.setValue ''
     $('#open')[0].selectedIndex = 0 # index = 0 means "Open..."
     $('#open').selectmenu('refresh')
 
@@ -751,7 +764,9 @@ $(document).ready ->
     $('#keys').css('display', 'block')
   else
     # for desktop safari or chrome
-    $('#scriptpage').bind 'pageshow', -> scriptEditor.refresh()
+    $('#scriptpage').bind 'pageshow', ->
+      scriptEditor.refresh()
+      cheatViewer.refresh()
     $('#markuppage').bind 'pageshow', -> markupEditor.refresh()
 
   layoutEditor()

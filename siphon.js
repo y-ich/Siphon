@@ -1,5 +1,5 @@
 (function() {
-  var KeyFSM, KeyState, appCache, appCacheUpdate, capitalize, clickSaveas, clipboard, currentFile, evalCS, fileOptions, fireKeyEvent, fireTextEvent, initCheatViewer, initMarkupEditor, initScriptEditor, jssnippet, keyActive, keyCodes, keyInactive, keySound, keySubActive, keySubInactive, layoutEditor, markupEditor, max, menuBar, onKeyEventforiPad, pos2xy, resetSelect, resetSelects, scriptEditor, settingMenu, softKeyboard, xy2pos;
+  var KeyFSM, KeyState, appCache, appCacheUpdate, capitalize, cheatViewer, clickSaveas, clipboard, currentFile, evalCS, fileOptions, fireKeyEvent, fireTextEvent, formatForSave, initCheatViewer, initMarkupEditor, initScriptEditor, jssnippet, keyActive, keyCodes, keyInactive, keySound, keySubActive, keySubInactive, layoutEditor, markupEditor, max, menuBar, onKeyEventforiPad, pos2xy, resetSelect, resetSelects, scriptEditor, settingMenu, softKeyboard, xy2pos;
 
   window.siphon = {};
 
@@ -8,6 +8,8 @@
   };
 
   scriptEditor = null;
+
+  cheatViewer = null;
 
   markupEditor = null;
 
@@ -67,11 +69,20 @@
     return resetSelect('delete');
   };
 
+  formatForSave = function() {
+    var data;
+    data = {
+      script: scriptEditor.getValue(),
+      markup: markupEditor.getValue()
+    };
+    return JSON.stringify(data);
+  };
+
   clickSaveas = function() {
     var currentFile;
     currentFile = prompt('filename:');
     if (!(currentFile != null)) return;
-    localStorage.setItem(currentFile, scriptEditor.getValue());
+    localStorage.setItem(currentFile, formatForSave());
     return resetSelects();
   };
 
@@ -415,15 +426,15 @@
   };
 
   initCheatViewer = function() {
-    var parent, viewer;
+    var parent;
     parent = $('#cheat').parent()[0];
     $('#cheat').remove();
-    viewer = CodeMirror(parent, {
+    cheatViewer = CodeMirror(parent, {
       mode: 'coffeescript',
       readOnly: true,
       value: '# CoffeeScript Cheat Sheet\n# based on "The Little Book on CoffeeScript".\n\n# A comment\n\n###\nA multiline comment\n###\n\n# No need to declare a variable. Just assign into it.\nmyVariable = "test"\n\n# To export a variable out of the code,\n# make a property in a global object.\nexports = this\nexports.myVariable = "foo-bar"\n\n# "->", called "arrow", means start of function definition.\nfunc = -> "bar"\n\n# INDENTED lines are recognized as a block.\nfunc  ->\n  # An extra line\n  "bar"\n\n# variables in parentheses before the arrow are arguments.\ntimes = (a, b) -> a * b\n\n# equations in parentheses give default values\n# if an argument is omitted when invoking.\ntimes = (a = 1, b = 2) -> a * b\n\n# Variable arguments. nums should be an array.\nsum = (nums...) ->\n  result = 0\n  nums.forEach (n) -> result += n\n  result\n\n# function name + argument(s) is function invocation.\n# parentheses are optional unless no argument.\nalert("Howdy!")\nalert inspect("Howdy!")\n\n# \'=>\', called "fat arrow", also means start of function definition,\n# except that "this" in the fucntion body indicates local context\n# of the function definition.\nthis.clickHandler = -> alert "clicked"\nelement.addEventListener "click", (e) => this.clickHandler(e)\n\n# Object literals. Braces are optional.\nobject1 = {one : 1, two : 2}\nobject2 = one : 1, two : 2\nobject3 =\n  one : 1\n  two : 2\n\n# Array literals. Brackets are mandatory.\narray1 = [1, 2, 3]\narray2 = [\n  1\n  2\n  3\n]\n\n# Conditional expression\nif true == true\n  "We\'re ok"\nif true != true then "Panic"\nif 1 > 0 then "Ok" else "Y2K!"\nalert "It\'s cold!" if heat %lt; 5\n\n# negate operator\nif not true then "Panic"\n\n# unless\nunless true\n  "Panic"\n\n# is/isnt statement\nif true is 1\n  "Type coercion fail!"\nif true isnt true\n  alert "Opposite day!"\n\n# String interpolation.\n# You can embed a value of a variable into a String.\nfavourite_color = "Blue. No, yel..."\nquestion = "Bridgekeeper: What... is your favourite color?\n            Galahad: #{favourite_color}\n            Bridgekeeper: Wrong!\n            "\n# Loops in an array\nprisoners = ["Roger", "Roderick", "Brian"]\nfor name in prisoners\n  alert "Release #{name}"\nfor name, i in ["Roger the pickpocket", "Roderick the robber"]\n  alert "#{i} - Release #{name}"\nrelease prisoner for prisoner in prisoners\nrelease prisoner for prisoner in prisoners when prisoner[0] is "R"\n\n# Loops in an object\nnames = sam: seaborn, donna: moss\nalert("#{first} #{last}") for first, last of names\n\n# "while", the only low-level loop.\nnum = 6\nminstrel = while num -= 1\n  num + " Brave Sir Robin ran away"\n\n# loop is while true\nloop\n  return if comfirm(\'Are you sure?\')\n\n# until is while not\n\n# Arrays\nrange = [1..5] # [1,2,3,4,5]\n\nfirstTwo = ["one", "two", "three"][0..1]\nmy_ = "my string"[0..2]\n\n# Multiple assignments\nnumbers = [0..9]\nnumbers[3..5] = [-3, -4, -5]\n\n# existence in an array.\nwords = ["rattled", "roudy", "rebbles", "ranks"]\nalert "Stop wagging me" if "ranks" in words\n\n# Aliases\n@saviour = true # this.saviour = true\n\nUser::first = -> @records[0] # User.prototype.first = this.record[0]\n\n# existential operators\npraise if brian?\n\nvelocity = southern ? 40\n\n# undefined or null check of return value.\nblackKnight.getLegs()?.kick()\n\n# undefined or null check of function itself.\nblackKnight.getLegs().kick?()\n\n# Class\nclass Animal\n  @find : (name) = -> # class variable(property)\n    # implementation\n\n  price : 5 # instance variable(property)\n\n  constructor : (@name) ->\n  # Instance variable "name" is declared automatically\n  # and the argument would be assigned automatically.\n\n  sell : =>\n    alert "Give me #{@price} shillings!"\n    # using \'=>\' means "this" in body is binded to current instance even if the property is passed as function.\n\nanimal = new Animal\n$("#sell").click(animal.sell)\n\n# Inheritance\nclass Parrot extends Animal\n  constructor : ->\n    super("Parrot")\n    # super is the function of the super class named as same.'
     });
-    return $('textarea', viewer.getWrapperElement()).attr('disabled', 'true');
+    return $('textarea', cheatViewer.getWrapperElement()).attr('disabled', 'true');
   };
 
   initMarkupEditor = function() {
@@ -531,19 +542,27 @@
       if (!(currentFile != null) || currentFile === '') {
         return clickSaveas();
       } else {
-        localStorage.setItem(currentFile, scriptEditor.getValue());
+        localStorage.setItem(currentFile, formatForSave());
         return alert('"' + currentFile + '" was saved.');
       }
     });
     $('#saveas').click(clickSaveas);
     $('#about').click(function() {
-      return alert('Siphon\nCoffeeScript Programming Environment\nVersion 0.6.0\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.');
+      return alert('Siphon\nCoffeeScript Programming Environment\nVersion 0.6.1\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.');
     });
     resetSelects();
     $('#open').change(function() {
+      var data;
       currentFile = $('#open')[0].value;
       if ((currentFile != null) && currentFile !== '') {
-        scriptEditor.setValue(localStorage[$('#open')[0].value]);
+        try {
+          data = JSON.parse(localStorage[$('#open')[0].value]);
+          if (data.script != null) scriptEditor.setValue(data.script);
+          if (data.markup != null) markupEditor.setValue(data.markup);
+        } catch (e) {
+          scriptEditor.setValue(localStorage[$('#open')[0].value]);
+          markupEditor.setValue('');
+        }
       }
       $('#open')[0].selectedIndex = 0;
       return $('#open').selectmenu('refresh');
@@ -611,7 +630,8 @@
       $('#keys').css('display', 'block');
     } else {
       $('#scriptpage').bind('pageshow', function() {
-        return scriptEditor.refresh();
+        scriptEditor.refresh();
+        return cheatViewer.refresh();
       });
       $('#markuppage').bind('pageshow', function() {
         return markupEditor.refresh();
