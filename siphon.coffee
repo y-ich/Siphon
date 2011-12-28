@@ -356,7 +356,17 @@ appCacheUpdate = ->
 
 initScriptEditor = ->
   scriptEditor = CodeMirror $('#scripteditor')[0],
-    value :  "#Select a line below by tapping the line and pressing cntrl + l.\n#And press cntrl + r to run the line and see the result.\n1 + 1"
+    value :
+      '''
+      # "do-it" feature
+      # Select a line below by tapping the line and pressing cntrl + l.
+      # And press cntrl + r to run the line and see the result.
+      1 + 1
+
+      # Console feature
+      # A message will appear on the console pane in runpage.
+      window.siphon.log 'Hello, world.'
+      '''
     matchBrackets: true
     mode : 'coffeescript'
     lineNumbers: true
@@ -574,6 +584,7 @@ initMarkupEditor = ->
     value :
       '''
       <!-- The HTML snippet here will be injected into the content of Run page when executing the script -->
+      <div style="width: 100px; height: 100px; border-radius: 50%; background: -webkit-radial-gradient(30% 30%, white, black);"></div>
       <canvas id="canvas" style="margin: 10px; width: 300px; height: 150px; border: 1px solid green;"></canvas>
       <svg id="svg" style="margin: 10px; width: 300px; height: 150px; border: 1px solid blue;"></svg>
       '''
