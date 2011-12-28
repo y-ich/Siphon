@@ -1,5 +1,6 @@
 CACHE MANIFEST
-# version 332
+# version 0.6.0
+# build 1
 
 CACHE:
 http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css
@@ -30,7 +31,6 @@ lib/processing-1.3.6-api.min.js lib/missing.js
 lib/awesomechart.js lib/missing.js
 lib/raphael-min.js lib/missing.js
 lib/elycharts.min.js lib/missing.js
-
 
 NETWORK:
 sounds/click.aiff
