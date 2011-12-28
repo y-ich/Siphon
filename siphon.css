@@ -169,7 +169,21 @@ div[data-role="content"] {
 		z-index: 0;
 }
 
-#canvas {
+#runpage [data-role="content"] {
+		height: 100%; /* doesn't work */
+}
+
+#application {
 		width: 95%;
-		height: 40%;
+		margin: 10px;
+		border: 1px solid black;
+		border-radius: 5px;
+}
+
+#console {
+		width: 95%;
+		margin: 10px;
+		height: 287px; /* iOSKeyboardHeight - margins */
+		background: white;
+		border: 1px solid black;
 }

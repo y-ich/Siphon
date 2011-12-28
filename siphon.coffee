@@ -2,6 +2,12 @@
 # author: ICHIKAWA, Yuji
 # Copyright (C) 2011 safari-park
 
+# exports
+
+window.siphon = {}
+window.siphon.log = (obj) ->
+  $('#console').text $('#console').text() + obj + '\n'
+
 #
 # parameters
 #
@@ -74,7 +80,7 @@ clickSaveas = ->
 
 layoutEditor = ->
   restHeight = window.innerHeight -
-    max($.makeArray($("div[data-role='header']").map(-> $(this).outerHeight(true)))) -
+    max($.makeArray($('div[data-role="header"]').map(-> $(this).outerHeight(true)))) -
     ($(scriptEditor.element).outerHeight(true) - $(scriptEditor.element).height()) -
     $('#backofkeyboard').height()
   restHeight -= $('#keys').outerHeight(true) if $('#keyboard-on')[0].checked
@@ -82,6 +88,11 @@ layoutEditor = ->
   restHeight -= $('#error').outerHeight(true)
   scriptEditor.setHeight restHeight + 'px'
 
+  restHeight = window.innerHeight -
+    max($.makeArray($('div[data-role="header"]').map(-> $(this).outerHeight(true)))) -
+    ($('#application').outerHeight(true) - $('#application').height()) -
+    $('#console').outerHeight()
+  $('#application').height(restHeight + 'px')
 
 keyCodes =
   'Control' : 17
@@ -366,10 +377,14 @@ initScriptEditor = ->
     this.refresh()
   scriptEditor.compile = ->
     try
-      CoffeeScript.compile @getValue() # syntax check
+      result = CoffeeScript.compile @getValue()
       $('#error').text('')
+      result
     catch error
       $('#error').text(error.message)
+      ''
+
+  scriptEditor.compile() # compile of default code
 
 initCheatViewer = ->
   parent = $('#cheat').parent()[0]
@@ -559,14 +574,16 @@ initMarkupEditor = ->
     value :
       '''
       <!-- The HTML snippet here will be injected into the content of Run page when executing the script -->
-      <canvas id="canvas"></canvas>
-      <svg id="svg"></svg>
+      <canvas id="canvas" style="margin: 10px; width: 300px; height: 150px; border: 1px solid green;"></canvas>
+      <svg id="svg" style="margin: 10px; width: 300px; height: 150px; border: 1px solid blue;"></svg>
       '''
 
     matchBrackets: true
     mode : {name : 'xml', htmlMode : true}
     lineNumbers: true
+    onChange : -> $('#application').html markupEditor.getValue()
     onKeyEvent : onKeyEventforiPad
+  $('#application').html markupEditor.getValue()
 
   markupEditor.setHeight = (str) ->
     this.getScrollerElement().style.height = str
@@ -699,20 +716,20 @@ $(document).ready ->
   # prevents native soft keyboard to slip down when button was released.
   # You may not need this hack when using CodeMirror.
   $('.key.main').mousedown (event) -> event.preventDefault()
-  $("div[data-role='page'].editorpage").bind 'pageshow', ->
+  $('div[data-role="page"].editorpage').bind 'pageshow', ->
     if $('#keyboard-on')[0].checked
       $('#keys').css('display', 'block')
     else
       $('#keys').css('display', 'none')
 
-  $("div[data-role='page']:not(.editorpage)").bind 'pageshow', ->
+  $('div[data-role="page"]:not(.editorpage)').bind 'pageshow', ->
     $('#keys').css('display', 'none')
 
   $('#runpage').bind 'pageshow', ->
     try
-      eval CoffeeScript.compile scriptEditor.getValue()
+      eval scriptEditor.compile()
     catch error
-      alert error.message
+      window.siphon.log error.message
 
   initScriptEditor()
   initMarkupEditor()
@@ -726,8 +743,6 @@ $(document).ready ->
     $('#scriptpage').bind 'pageshow', -> scriptEditor.refresh()
     $('#markuppage').bind 'pageshow', -> markupEditor.refresh()
 
-  $('#backofkeyboard').css('display', 'block')
-  # backofkeyboard is not showed until layout for the beauty.
   layoutEditor()
   # problem
   #  When debug console is enabled on iPad, just after loading,
@@ -743,5 +758,3 @@ $(document).ready ->
   softKeyboard()
   menuBar()
   settingMenu()
-
-  scriptEditor.compile()

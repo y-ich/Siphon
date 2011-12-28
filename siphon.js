@@ -1,6 +1,12 @@
 (function() {
   var KeyFSM, KeyState, appCache, appCacheUpdate, capitalize, clickSaveas, clipboard, currentFile, evalCS, fileOptions, fireKeyEvent, fireTextEvent, initCheatViewer, initMarkupEditor, initScriptEditor, jssnippet, keyActive, keyCodes, keyInactive, keySound, keySubActive, keySubInactive, layoutEditor, markupEditor, max, menuBar, onKeyEventforiPad, pos2xy, resetSelect, resetSelects, scriptEditor, settingMenu, softKeyboard, xy2pos;
 
+  window.siphon = {};
+
+  window.siphon.log = function(obj) {
+    return $('#console').text($('#console').text() + obj + '\n');
+  };
+
   scriptEditor = null;
 
   markupEditor = null;
@@ -71,13 +77,17 @@
 
   layoutEditor = function() {
     var restHeight;
-    restHeight = window.innerHeight - max($.makeArray($("div[data-role='header']").map(function() {
+    restHeight = window.innerHeight - max($.makeArray($('div[data-role="header"]').map(function() {
       return $(this).outerHeight(true);
     }))) - ($(scriptEditor.element).outerHeight(true) - $(scriptEditor.element).height()) - $('#backofkeyboard').height();
     if ($('#keyboard-on')[0].checked) restHeight -= $('#keys').outerHeight(true);
     markupEditor.setHeight(restHeight + 'px');
     restHeight -= $('#error').outerHeight(true);
-    return scriptEditor.setHeight(restHeight + 'px');
+    scriptEditor.setHeight(restHeight + 'px');
+    restHeight = window.innerHeight - max($.makeArray($('div[data-role="header"]').map(function() {
+      return $(this).outerHeight(true);
+    }))) - ($('#application').outerHeight(true) - $('#application').height()) - $('#console').outerHeight();
+    return $('#application').height(restHeight + 'px');
   };
 
   keyCodes = {
@@ -390,14 +400,18 @@
       this.getScrollerElement().style.height = str;
       return this.refresh();
     };
-    return scriptEditor.compile = function() {
+    scriptEditor.compile = function() {
+      var result;
       try {
-        CoffeeScript.compile(this.getValue());
-        return $('#error').text('');
+        result = CoffeeScript.compile(this.getValue());
+        $('#error').text('');
+        return result;
       } catch (error) {
-        return $('#error').text(error.message);
+        $('#error').text(error.message);
+        return '';
       }
     };
+    return scriptEditor.compile();
   };
 
   initCheatViewer = function() {
@@ -417,15 +431,19 @@
     parent = $('#markupeditor').parent()[0];
     $('#markupeditor').remove();
     markupEditor = CodeMirror(parent, {
-      value: '<!-- The HTML snippet here will be injected into the content of Run page when executing the script -->\n<canvas id="canvas"></canvas>\n<svg id="svg"></svg>',
+      value: '<!-- The HTML snippet here will be injected into the content of Run page when executing the script -->\n<canvas id="canvas" style="margin: 10px; width: 300px; height: 150px; border: 1px solid green;"></canvas>\n<svg id="svg" style="margin: 10px; width: 300px; height: 150px; border: 1px solid blue;"></svg>',
       matchBrackets: true,
       mode: {
         name: 'xml',
         htmlMode: true
       },
       lineNumbers: true,
+      onChange: function() {
+        return $('#application').html(markupEditor.getValue());
+      },
       onKeyEvent: onKeyEventforiPad
     });
+    $('#application').html(markupEditor.getValue());
     return markupEditor.setHeight = function(str) {
       this.getScrollerElement().style.height = str;
       return this.refresh();
@@ -569,21 +587,21 @@
     $('.key.main').mousedown(function(event) {
       return event.preventDefault();
     });
-    $("div[data-role='page'].editorpage").bind('pageshow', function() {
+    $('div[data-role="page"].editorpage').bind('pageshow', function() {
       if ($('#keyboard-on')[0].checked) {
         return $('#keys').css('display', 'block');
       } else {
         return $('#keys').css('display', 'none');
       }
     });
-    $("div[data-role='page']:not(.editorpage)").bind('pageshow', function() {
+    $('div[data-role="page"]:not(.editorpage)').bind('pageshow', function() {
       return $('#keys').css('display', 'none');
     });
     $('#runpage').bind('pageshow', function() {
       try {
-        return eval(CoffeeScript.compile(scriptEditor.getValue()));
+        return eval(scriptEditor.compile());
       } catch (error) {
-        return alert(error.message);
+        return window.siphon.log(error.message);
       }
     });
     initScriptEditor();
@@ -599,13 +617,11 @@
         return markupEditor.refresh();
       });
     }
-    $('#backofkeyboard').css('display', 'block');
     layoutEditor();
     initCheatViewer();
     softKeyboard();
     menuBar();
-    settingMenu();
-    return scriptEditor.compile();
+    return settingMenu();
   });
 
 }).call(this);
