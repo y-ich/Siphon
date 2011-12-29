@@ -106,6 +106,25 @@ samples =
       <button id="exitbutton">terminate drawing</button>
       <canvas id="canvas"></canvas>
       """
+  raphael :
+    script :
+      """
+      # A sample for Raphaël
+      # PLEASE import Raphaël before letting it run!
+      # This sample is based on http://raphaeljs.com/playground.html
+      if not Raphael?
+        alert 'PLEASE import Raphaël!'
+        return
+
+      paper = Raphael($('#application')[0], 640, 480)
+      paper.circle(320, 240, 60).animate
+          fill : '#223fa3'
+          stroke : '#000'
+          'stroke-width' : 80
+          'stroke-opacity' : 0.5
+        , 2000
+      """
+    markup : ''
   dygraphs :
     script :
       """
@@ -253,7 +272,7 @@ layoutEditor = ->
   restHeight = window.innerHeight -
     max($.makeArray($('div[data-role="header"]').map(-> $(this).outerHeight(true)))) -
     ($('#application').outerHeight(true) - $('#application').height()) -
-    $('#console').outerHeight()
+    $('#console').outerHeight(true)
   $('#application').height(restHeight + 'px')
 
 keyCodes =
@@ -738,7 +757,7 @@ initCheatViewer = ->
 
   $('textarea', cheatViewer.getWrapperElement()).attr 'disabled', 'true'
 
-# js viewer
+# Markup editor
 initMarkupEditor = ->
   parent = $('#markupeditor').parent()[0]
   $('#markupeditor').remove()
@@ -754,9 +773,7 @@ initMarkupEditor = ->
     matchBrackets: true
     mode : {name : 'xml', htmlMode : true}
     lineNumbers: true
-    onChange : -> $('#application').html markupEditor.getValue()
     onKeyEvent : onKeyEventforiPad
-  $('#application').html markupEditor.getValue()
 
   markupEditor.setHeight = (str) ->
     this.getScrollerElement().style.height = str
@@ -840,7 +857,7 @@ menuBar = ->
   $('#saveas').click clickSaveas
 
   $('#about').click ->
-    alert 'Siphon\nCoffeeScript Programming Environment\nVersion 0.6.1\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.'
+    alert 'Siphon\nCoffeeScript Programming Environment\nVersion 0.6.2\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.'
 
   resetSelects() # "Open...", and "Delete..." menus
 
@@ -911,6 +928,10 @@ $(document).ready ->
 
   $('div[data-role="page"]:not(.editorpage)').bind 'pageshow', ->
     $('#keys').css('display', 'none')
+
+
+  $('#runpage').bind 'pagebeforeshow', ->
+    $('#application').html markupEditor.getValue()
 
   $('#runpage').bind 'pageshow', ->
     try

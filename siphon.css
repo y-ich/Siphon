@@ -169,10 +169,6 @@ div[data-role="content"] {
 		z-index: 0;
 }
 
-#runpage [data-role="content"] {
-		height: 100%; /* doesn't work */
-}
-
 #application {
 		width: 95%;
 		margin: 10px;

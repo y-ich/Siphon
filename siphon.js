@@ -26,6 +26,10 @@
       script: "# A sample for Processing.js\n# PLEASE import Processing.js before letting it run!\n# This sample is based on http://dry.ly/2011/02/21/coffeescript--processingjs--crazy-delicious/\nif not Processing?\n  alert 'PLEASE import Processing.js!'\n  return\n\ndraw = (p5) -> # p5 is a contraction of processing\n  p5.setup = ->\n    p5.size $('#application').width(), $('#application').height()\n    p5.background 0\n\n  p5.draw = ->\n    # noise() needs an \"offset\" argument\n    # we'll tie it to the frame count\n    x_off = p5.frameCount * 0.0005\n\n    # we want y's offset to increase at the same rate\n    # but be different (20 is arbitrary)\n    y_off = x_off + 20\n\n    # use noise(), the offset, and our sketch's dimensions\n    # to get a \"random\" position for our \"brush\"\n    x = p5.noise(x_off) * p5.width\n    y = p5.noise(y_off) * p5.height\n\n    # color our brush (red with 15% opacity)\n    p5.stroke(255, 0, 0, 15)\n\n    # draw at brush's current location (set above)\n    p5.point(x, y)\n\nprocessing = new Processing($('#canvas')[0], draw)\n$('#exitbutton').bind 'click', ->\n  window.siphon.log 'terminate'\n  processing.exit()",
       markup: "<button id=\"exitbutton\">terminate drawing</button>\n<canvas id=\"canvas\"></canvas>"
     },
+    raphael: {
+      script: "# A sample for Raphaël\n# PLEASE import Raphaël before letting it run!\n# This sample is based on http://raphaeljs.com/playground.html\nif not Raphael?\n  alert 'PLEASE import Raphaël!'\n  return\n\npaper = Raphael($('#application')[0], 640, 480)\npaper.circle(320, 240, 60).animate\n    fill : '#223fa3'\n    stroke : '#000'\n    'stroke-width' : 80\n    'stroke-opacity' : 0.5\n  , 2000",
+      markup: ''
+    },
     dygraphs: {
       script: "# A sample for dygraphs\n# PLEASE import \"dygraphs\" before letting it run!\n# This sample is based on http://dygraphs.com/tests/demo.html\nif not Dygraph?\n  alert 'PLEASE import \"dygraphs\"!'\n  return\n\ngraph = new Dygraph document.getElementById(\"dygraph\"),\n  ->\n    zp = (x) -> if (x < 10) then \"0\"+x else x\n    r = \"date,parabola,line,another line,sine wave\\n\";\n    for i in [1..31]\n      r += \"200610\" + zp(i)\n      r += \",\" + 10*(i*(31-i))\n      r += \",\" + 10*(8*i)\n      r += \",\" + 10*(250 - 8*i)\n      r += \",\" + 10*(125 + 125 * Math.sin(0.3*i))\n      r += \"\\n\";\n    r\n  ,\n    labelsDiv : document.getElementById('status')\n    labelsSeparateLines : true\n    labelsKMB : true\n    legend : 'always'\n    colors : ['rgb(51,204,204)'\n              'rgb(255,100,100)'\n              '#00DD55'\n              'rgba(50,50,200,0.4)']\n    width : 640\n    height : 480\n    title : 'Interesting Shapes'\n    xlabel : 'Date'\n    ylabel : 'Count'\n    axisLineColor : 'white'\n    drawXGrid : false",
       markup: "<font size=-1>(Mouse over to highlight individual values. Click and drag to zoom. Double-click to zoom out.)</font><br/>\n<table>\n  <tr>\n    <td>\n      <div id=\"dygraph\"></div>\n    </td>\n    <td valign=top>\n      <div id=\"status\" style=\"width:200px; font-size:0.8em; padding-top:5px;\"></div>\n    </td>\n  </tr>\n</table>"
@@ -136,7 +140,7 @@
     scriptEditor.setHeight(restHeight + 'px');
     restHeight = window.innerHeight - max($.makeArray($('div[data-role="header"]').map(function() {
       return $(this).outerHeight(true);
-    }))) - ($('#application').outerHeight(true) - $('#application').height()) - $('#console').outerHeight();
+    }))) - ($('#application').outerHeight(true) - $('#application').height()) - $('#console').outerHeight(true);
     return $('#application').height(restHeight + 'px');
   };
 
@@ -488,12 +492,8 @@
         htmlMode: true
       },
       lineNumbers: true,
-      onChange: function() {
-        return $('#application').html(markupEditor.getValue());
-      },
       onKeyEvent: onKeyEventforiPad
     });
-    $('#application').html(markupEditor.getValue());
     return markupEditor.setHeight = function(str) {
       this.getScrollerElement().style.height = str;
       return this.refresh();
@@ -587,7 +587,7 @@
     });
     $('#saveas').click(clickSaveas);
     $('#about').click(function() {
-      return alert('Siphon\nCoffeeScript Programming Environment\nVersion 0.6.1\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.');
+      return alert('Siphon\nCoffeeScript Programming Environment\nVersion 0.6.2\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.');
     });
     resetSelects();
     $('#open').change(function() {
@@ -664,6 +664,9 @@
     });
     $('div[data-role="page"]:not(.editorpage)').bind('pageshow', function() {
       return $('#keys').css('display', 'none');
+    });
+    $('#runpage').bind('pagebeforeshow', function() {
+      return $('#application').html(markupEditor.getValue());
     });
     $('#runpage').bind('pageshow', function() {
       try {
