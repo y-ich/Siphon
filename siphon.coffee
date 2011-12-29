@@ -24,10 +24,12 @@ jssnippet = ''
 samples =
   underscore :
     script :
-      '''
+      """
       # A sample for Underscore.js
       # PLEASE import Underscore.js before letting it run!
-
+      if not _?
+        alert 'PLEASE import Underscore.js!'
+        return
 
       # Project Euler, Problem 1
       # If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
@@ -57,7 +59,7 @@ samples =
         acc += fibonacci(i) if fibonacci(i) % 2 == 0
         i++
       window.siphon.log 'answer = ' + acc
-      '''
+      """
     markup : ''
   processing :
     script :
@@ -65,6 +67,9 @@ samples =
       # A sample for Processing.js
       # PLEASE import Processing.js before letting it run!
       # This sample is based on http://dry.ly/2011/02/21/coffeescript--processingjs--crazy-delicious/
+      if not Processing?
+        alert 'PLEASE import Processing.js!'
+        return
 
       draw = (p5) -> # p5 is a contraction of processing
         p5.setup = ->
@@ -101,10 +106,59 @@ samples =
       <button id="exitbutton">terminate drawing</button>
       <canvas id="canvas"></canvas>
       """
-  elycharts :
+  dygraphs :
     script :
-    markup :
+      """
+      # A sample for dygraphs
+      # PLEASE import "dygraphs" before letting it run!
+      # This sample is based on http://dygraphs.com/tests/demo.html
+      if not Dygraph?
+        alert 'PLEASE import "dygraphs"!'
+        return
 
+      graph = new Dygraph document.getElementById("dygraph"),
+        ->
+          zp = (x) -> if (x < 10) then "0"+x else x
+          r = "date,parabola,line,another line,sine wave\\n";
+          for i in [1..31]
+            r += "200610" + zp(i)
+            r += "," + 10*(i*(31-i))
+            r += "," + 10*(8*i)
+            r += "," + 10*(250 - 8*i)
+            r += "," + 10*(125 + 125 * Math.sin(0.3*i))
+            r += "\\n";
+          r
+        ,
+          labelsDiv : document.getElementById('status')
+          labelsSeparateLines : true
+          labelsKMB : true
+          legend : 'always'
+          colors : ['rgb(51,204,204)'
+                    'rgb(255,100,100)'
+                    '#00DD55'
+                    'rgba(50,50,200,0.4)']
+          width : 640
+          height : 480
+          title : 'Interesting Shapes'
+          xlabel : 'Date'
+          ylabel : 'Count'
+          axisLineColor : 'white'
+          drawXGrid : false
+      """
+    markup :
+      """
+      <font size=-1>(Mouse over to highlight individual values. Click and drag to zoom. Double-click to zoom out.)</font><br/>
+      <table>
+        <tr>
+          <td>
+            <div id="dygraph"></div>
+          </td>
+          <td valign=top>
+            <div id="status" style="width:200px; font-size:0.8em; padding-top:5px;"></div>
+          </td>
+        </tr>
+      </table>
+      """
 #
 # utility functions
 #
@@ -894,4 +948,4 @@ $(document).ready ->
   menuBar()
   settingMenu()
 
-  $('#error').text("What's New (12/28/2011): Sample codes for libraries are available from open menu.")
+  $('#error').text("What's New (12/29/2011): Sample codes for libraries are available from open menu.")
