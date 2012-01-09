@@ -146,6 +146,9 @@ fireKeyEvent = (type, keyIdentifier, keyCode, charCode) ->
   e.mobile =
     keyCode : keyCode
     charCode : charCode
+  e.getKeyCode = -> e.mobile.keyCode;
+  e.getCharCode = -> e.mobile.charCode;
+
   document.activeElement.dispatchEvent(e)
 
 
@@ -469,6 +472,11 @@ prefetchKeyEvent = (instance, e) ->
     $('#Alt')[0].model.state is keyActive
   e.mobile.shiftKey = $('#Shift')[0].model? and
     $('#Shift')[0].model.state is keyActive
+  e.getMetaKey = -> @metaKey or @mobile.metaKey;
+  e.getCtrlKey = -> @ctrlKey or @mobile.ctrlKey;
+  e.getAltKey = -> @altKey or @mobile.altKey;
+  e.getShiftKey = -> @shiftKey or @mobile.shiftKey;
+
   if e.mobile.metaKey
     switch e.keyCode
       when 88 # 'X'.charCodeAt(0)
@@ -487,7 +495,7 @@ prefetchKeyEvent = (instance, e) ->
           fireTextEvent clipboard, TextEvent.DOM_INPUT_METHOD_PASTE
         e.stop()
         return true
-  if e.ctrlKey or e.mobile.ctrlKey
+  if e.getCtrlKey()
     switch e.keyCode
       when 76 # 'L'.charCodeAt(0)
         if e.type is 'keydown'
