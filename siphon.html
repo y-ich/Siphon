@@ -34,6 +34,37 @@
 		<!-- CoffeeScriptコンパイラ -->
 		<script src="http://jashkenas.github.com/coffee-script/extras/coffee-script.js"></script>
 		<script type="text/javascript" src="siphon.min.js"></script>
+		<script type="text/javascript">
+tab = function (id, title, transition, activepage) {
+	document.write('<li><a href="#' + id + '" ');
+	if (transition != '') document.write('data-transition="' + transition + '" ');
+  if (id == activepage) document.write('class="ui-btn-active ui-state-persist"');
+  document.write('>' + title + '</a></li>');
+}
+navbar1 = function (activepage) {
+  document.write('<div data-role="navbar">');
+  document.write('<ul>');
+	tab('scriptpage', 'Script', '', activepage);
+	tab('markuppage', 'Markup', '', activepage);
+	tab('runpage', 'Run', '', activepage);
+	tab('settingpage', 'Setting', '', activepage);
+  tab('smooth', 'Reference', 'fade', activepage);
+  document.write('</ul>');
+  document.write('</div>');
+}
+
+navbar2 = function (activepage) {
+  document.write('<div data-role="navbar">');
+  document.write('<ul>');
+	tab('scriptpage', 'Script', 'fade', activepage);
+  document.write('<li></li>');
+  document.write('<li></li>');
+	tab('underscore', 'Underscore.js', 'flip', activepage);
+	tab('smooth', 'Smooth CoffeeScript', 'flip', activepage);
+  document.write('</ul>');
+  document.write('</div>');
+}
+    </script>
 		<!-- <script type="text/javascript">
 				 if ('standalone' in navigator && !navigator.standalone && (/iphone|ipod|ipad/gi).test(navigator.platform) && (/Safari/i).test(navigator.appVersion)) {
 				 document.write('<link rel="stylesheet" href="lib\/add2home.css">');
@@ -76,15 +107,7 @@
 					</select>
 					<div id="about" data-role="button" data-icon="info">About Siphon</div>
 				</div>
-				<div data-role="navbar">
-					<ul>
-						<li><a href="#scriptpage" class="ui-btn-active ui-state-persist">Script</a></li>
-						<li><a href="#markuppage">Markup</a></li>
-						<li><a href="#runpage">Run</a></li>
-						<li><a href="#settingpage">Setting</a></li>
-						<li><a href="#smooth" data-transition="fade">References</a></li>
-					</ul>
-				</div>
+				<script type="text/javascript">navbar1('scriptpage');</script>
 			</div>
 			<div data-role="content" id="main">
 				<div id="scripteditor"></div>
@@ -138,15 +161,7 @@
 		<div data-role="page" id="markuppage" data-theme="c" class="editorpage">
 			<div data-role="header" data-theme="c">
 				<h1>Markup</h1>
-				<div data-role="navbar">
-					<ul>
-						<li><a href="#scriptpage">Script</a></li>
-						<li><a href="#markuppage" class="ui-btn-active ui-state-persist">Markup</a></li>
-						<li><a href="#runpage">Run</a></li>
-						<li><a href="#settingpage">Setting</a></li>
-						<li><a href="#smooth">References</a></li>
-					</ul>
-				</div>
+				<script type="text/javascript">navbar1('markpage');</script>
 			</div>
 			<div data-role="content">
 				<div id="markupeditor"></div>
@@ -156,15 +171,7 @@
 		<div data-role="page" id="runpage" data-theme="c">
 			<div data-role="header" data-theme="c">
 				<h1>Execution</h1>
-				<div data-role="navbar">
-					<ul>
-						<li><a href="#scriptpage">Script</a></li>
-						<li><a href="#markuppage" >Markup</a></li>
-						<li><a href="#runpage" class="ui-btn-active ui-state-persist">Run</a></li>
-						<li><a href="#settingpage">Setting</a></li>
-						<li><a href="#smooth">References</a></li>
-					</ul>
-				</div>
+				<script type="text/javascript">navbar1('runpage');</script>
 			</div>
 			<div data-role="content">
 				<div id="application" class="scroll"></div>
@@ -175,15 +182,7 @@
 		<div data-role="page" id="settingpage" data-theme="c">
 			<div data-role="header" data-theme="c">
 				<h1>Siphon Setting</h1>
-				<div data-role="navbar">
-					<ul>
-						<li><a href="#scriptpage">Script</a></li>
-						<li><a href="#markuppage" >Markup</a></li>
-						<li><a href="#runpage">Run</a></li>
-						<li><a href="#settingpage" class="ui-btn-active ui-state-persist">Setting</a></li>
-						<li><a href="#smooth">References</a></li>
-					</ul>
-				</div>
+				<script type="text/javascript">navbar1('settingpage');</script>
 			</div>
 			<div data-role="content">
 				<div data-role="fieldcontain" date-inset="true">
@@ -199,15 +198,7 @@
 		<div data-role="page" id="smooth" data-theme="c">
 			<div data-role="header" data-theme="c">
 				<h1>Smooth CoffeeScript</h1>
-				<div data-role="navbar">
-					<ul>
-						<li><a href="#scriptpage">Script</a></li>
-						<li></li>
-						<li></li>
-						<li><a href="#underscore" data-transition="flip">Underscore.js</a></li>
-						<li><a href="#smooth" class="ui-btn-active ui-state-persist">Smooth CofeeScript</a></li>
-					</ul>
-				</div>
+				<script type="text/javascript">navbar2('smooth');</script>
 			</div>
 			<div data-role="content" style="height: 100%;">
 				<iframe src="Smooth CoffeeScript.html" width="100%" height="100%"></iframe><!-- width and height don't work on iPad but work on desktop. -->
@@ -217,15 +208,7 @@
 		<div data-role="page" id="underscore" data-theme="c">
 			<div data-role="header" data-theme="c">
 				<h1>Underscore.js</h1>
-				<div data-role="navbar">
-					<ul>
-						<li><a href="#scriptpage">Script</a></li>
-						<li></li>
-						<li></li>
-						<li><a href="#underscore" class="ui-btn-active ui-state-persist">Underscore.js</a></li>
-						<li><a href="#smooth" data-transition="flip">Smooth CofeeScript</a></li>
-					</ul>
-				</div>
+				<script type="text/javascript">navbar2('underscore');</script>
 			</div>
 			<div data-role="content" style="height: 100%;">
 				<iframe src="Underscore.js.html" width="100%" height="100%"></iframe>
