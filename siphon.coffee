@@ -231,7 +231,7 @@ initScriptEditor = ->
     mode : 'coffeescript'
     lineNumbers: true
     onChange : -> scriptEditor.compile()
-    onKeyEvent : onKeyEventforiPad
+    onKeyEvent : prefetchKeyEvent
 
   # In order to improve unexpected scroll during inputting on iPad.
   scriptEditor.bodyTop = 0
@@ -452,14 +452,14 @@ initMarkupEditor = ->
     matchBrackets: true
     mode : {name : 'xml', htmlMode : true}
     lineNumbers: true
-    onKeyEvent : onKeyEventforiPad
+    onKeyEvent : prefetchKeyEvent
 
   markupEditor.setHeight = (str) ->
     this.getScrollerElement().style.height = str
     this.refresh()
 
 
-onKeyEventforiPad = (instance, e) ->
+prefetchKeyEvent = (instance, e) ->
   e.mobile ?= {}
   e.mobile.metaKey = $('#Meta')[0].model? and
     $('#Meta')[0].model.state is keyActive
