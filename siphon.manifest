@@ -20,7 +20,7 @@ lib/util/search.js
 lib/util/searchcursor.js
 lib/util/dialog.js
 lib/util/dialog.css
-lib/util/foldcode.js
+# lib/util/foldcode.js
 mode/coffeescript/coffeescript.js
 mode/xml/xml.js
 
