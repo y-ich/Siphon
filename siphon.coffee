@@ -201,10 +201,8 @@ appCache.addEventListener 'noupdate', ->
 #appCache.addEventListener 'progress', ->
 appCache.addEventListener 'cached', ->
   alert 'Conguatulation! You can use Siphon offline.'
-# appCache.addEventListener 'updateready', ->
-#   if confirm 'New version was downloaded. Do you want to update?'
-#     appCache.swapCache()
-#     location.reload()
+appCache.addEventListener 'updateready', ->
+  console.log 'New version was just downloaded.'
 appCache.addEventListener 'obsolete', ->
   alert 'Sorry for inconvenience. Siphon moved to http://y-ich.github.com/Siphon/ on 2011/12/13.'
 appCache.addEventListener 'error', ->
