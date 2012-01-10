@@ -143,11 +143,9 @@ fireKeyEvent = (type, keyIdentifier, keyCode, charCode) ->
   e.initKeyboardEvent type, true, true, window, keyIdentifier,
     KeyboardEvent.DOM_KEY_LOCATION_STANDARD, ''
   # There is no getModifiersState method in webkit, so you have no way to know the content of modifiersList. So I use '' in the last argument.
-  e.mobile =
+  e.override =
     keyCode : keyCode
     charCode : charCode
-  e.getKeyCode = -> e.mobile.keyCode;
-  e.getCharCode = -> e.mobile.charCode;
 
   document.activeElement.dispatchEvent(e)
 
@@ -461,21 +459,17 @@ initMarkupEditor = ->
 
 
 prefetchKeyEvent = (instance, e) ->
-  e.mobile ?= {}
-  e.mobile.metaKey = $('#Meta')[0].model? and
+  e.override ?= {}
+  e.override['metaKey'] = $('#Meta')[0].model? and
     $('#Meta')[0].model.state is keyActive
-  e.mobile.ctrlKey = $('#Control')[0].model? and
+  e.override['ctrlKey'] = $('#Control')[0].model? and
     $('#Control')[0].model.state is keyActive
-  e.mobile.altKey = $('#Alt')[0].model? and
+  e.override['altKey'] = $('#Alt')[0].model? and
     $('#Alt')[0].model.state is keyActive
-  e.mobile.shiftKey = $('#Shift')[0].model? and
+  e.override['shiftKey'] = $('#Shift')[0].model? and
     $('#Shift')[0].model.state is keyActive
-  e.getMetaKey = -> @metaKey or @mobile.metaKey;
-  e.getCtrlKey = -> @ctrlKey or @mobile.ctrlKey;
-  e.getAltKey = -> @altKey or @mobile.altKey;
-  e.getShiftKey = -> @shiftKey or @mobile.shiftKey;
 
-  if e.mobile.metaKey
+  if e.override['metaKey']
     switch e.keyCode
       when 88 # 'X'.charCodeAt(0)
         if e.type is 'keydown'
@@ -493,7 +487,7 @@ prefetchKeyEvent = (instance, e) ->
           fireTextEvent clipboard, TextEvent.DOM_INPUT_METHOD_PASTE
         e.stop()
         return true
-  if e.getCtrlKey()
+  if e.ctrlKey || e.override['ctrlKey']
     switch e.keyCode
       when 76 # 'L'.charCodeAt(0)
         if e.type is 'keydown'
