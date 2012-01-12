@@ -192,15 +192,23 @@ currentFile = null
 # Application cache dispatches
 #
 appCache = window.applicationCache
-#appCache.addEventListener 'checking', ->
+appCache.addEventListener 'checking', ->
+  if appCache.manual? and appCache.manual
+    $('#error').text('Checking...')
 appCache.addEventListener 'noupdate', ->
-  console.log 'Manifest has no change.'
-#appCache.addEventListener 'downloading', ->
+  if appCache.manual? and appCache.manual
+    $('#error').text('No update')
+appCache.addEventListener 'downloading', ->
+  if appCache.manual? and appCache.manual
+    $('#error').text('Newer version was found. Now downloading...')
 #appCache.addEventListener 'progress', ->
 appCache.addEventListener 'cached', ->
   alert 'Conguatulation! You can use Siphon offline.'
 appCache.addEventListener 'updateready', ->
-  console.log 'New version was just downloaded.'
+  if appCache.manual? and appCache.manual and @status is @UPDATEREADY
+    @swapCache()
+    window.location.reload()
+
 appCache.addEventListener 'obsolete', ->
   alert 'Sorry for inconvenience. Siphon moved to http://y-ich.github.com/Siphon/ on 2011/12/13.'
 appCache.addEventListener 'error', ->
@@ -208,6 +216,7 @@ appCache.addEventListener 'error', ->
   # error occurs when calling update() offline.
 appCacheUpdate = ->
   try
+    appCache.manual = true
     appCache.update() if navigator.onLine
   catch e
     console.log e
@@ -374,7 +383,7 @@ initCheatViewer = ->
 
       # loop is while true
       loop
-        return if comfirm('Are you sure?')
+        return if confirm('Are you sure?')
 
       # until is while not
 
@@ -536,7 +545,8 @@ menuBar = ->
   $('#saveas').click clickSaveas
 
   $('#about').click ->
-    alert 'Siphon\nCoffeeScript Programming Environment\nVersion 0.6.3\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.'
+    if confirm 'Siphon\nCoffeeScript Programming Environment\nVersion 0.6.3\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.\nDo you want to check update?'
+      appCacheUpdate()
 
   resetSelects() # "Open...", and "Delete..." menus
 
@@ -591,7 +601,6 @@ settingMenu = ->
     keySound.enable = if this.checked then true else false
 
 $(document).ready ->
-  appCacheUpdate()
 
   # jQuery Mobile setting
   $('#scriptpage').addBackBtn = false # no back button on top page.
@@ -599,6 +608,7 @@ $(document).ready ->
   # prevents native soft keyboard to slip down when button was released.
   # You may not need this hack when using CodeMirror.
   $('.key.main').mousedown (event) -> event.preventDefault()
+
   $('div[data-role="page"].editorpage').bind 'pageshow', ->
     if $('#keyboard-on')[0].checked
       $('#keys').css('display', 'block')
@@ -607,7 +617,6 @@ $(document).ready ->
 
   $('div[data-role="page"]:not(.editorpage)').bind 'pageshow', ->
     $('#keys').css('display', 'none')
-
 
   $('#runpage').bind 'pagebeforeshow', ->
     $('#application').html markupEditor.getValue()
