@@ -192,28 +192,32 @@ currentFile = null
 # Application cache dispatches
 #
 appCache = window.applicationCache
+
 appCache.addEventListener 'checking', ->
-  if appCache.manual? and appCache.manual
-    $('#error').text('Checking...')
+  $('#error').text('Checking...') if @manual
+
 appCache.addEventListener 'noupdate', ->
-  if appCache.manual? and appCache.manual
-    $('#error').text('No update')
+  $('#error').text('No update') if @manual
+
 appCache.addEventListener 'downloading', ->
-  if appCache.manual? and appCache.manual
-    $('#error').text('Newer version was found. Now downloading...')
+  $('#error').text('Newer version was found. Now downloading...') if @manual
+
 #appCache.addEventListener 'progress', ->
+
 appCache.addEventListener 'cached', ->
   alert 'Conguatulation! You can use Siphon offline.'
+
 appCache.addEventListener 'updateready', ->
-  if appCache.manual? and appCache.manual and @status is @UPDATEREADY
+  if @manual and @status is @UPDATEREADY
     @swapCache()
     window.location.reload()
 
 appCache.addEventListener 'obsolete', ->
   alert 'Sorry for inconvenience. Siphon moved to http://y-ich.github.com/Siphon/ on 2011/12/13.'
+
 appCache.addEventListener 'error', ->
-  console.log 'Application cache error.'
-  # error occurs when calling update() offline.
+  $('#error').text('Error.') if @manual
+
 appCacheUpdate = ->
   try
     appCache.manual = true
@@ -600,8 +604,8 @@ settingMenu = ->
   $('#key-sound').change ->
     keySound.enable = if this.checked then true else false
 
-$(document).ready ->
 
+$(document).ready ->
   # jQuery Mobile setting
   $('#scriptpage').addBackBtn = false # no back button on top page.
 
