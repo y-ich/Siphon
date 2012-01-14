@@ -5,6 +5,7 @@ CACHE MANIFEST
 CACHE:
 http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css
 siphon.css
+flick_keys.css
 http://code.jquery.com/jquery-1.6.4.min.js
 http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js
 http://code.jquery.com/mobile/1.0/images/ajax-loader.png
