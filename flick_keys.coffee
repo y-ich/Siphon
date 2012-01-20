@@ -206,3 +206,23 @@ fireTextEvent = (str, method = TextEvent.DOM_INPUT_METHOD_KEYBOARD) ->
   e.initTextEvent 'textInput', true, true, window, str,
     TextEvent.DOM_INPUT_METHOD_KEYBOARD
   document.activeElement.dispatchEvent(e)
+
+initKeys = ->
+  # prevents native soft keyboard to slip down when button was released.
+  # You may not need this hack when using CodeMirror.
+  $('.key.main').mousedown (event) -> event.preventDefault()
+
+  $('.key.main').live 'touchstart', (event) ->
+    touchPoint = event.originalEvent.targetTouches[0]
+    # lazy initialization
+    @model ?= new KeyFSM keyInactive, this, 400 #milli seconds
+    @model.touchStart touchPoint.pageX, touchPoint.pageY
+
+  $('.key.main').live 'touchmove', (event) ->
+    @model.touchMove event.originalEvent
+    event.preventDefault()
+    # Because page scroll are enabled at debug mode, page scroll are disabled on buttons
+
+  $('.key.main').live 'touchend', (event) -> @model.touchEnd()
+
+

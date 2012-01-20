@@ -457,21 +457,6 @@ prefetchKeyEvent = (instance, e) ->
   return false
 
 
-softKeyboard = ->
-  $('.key.main').bind 'touchstart', (event) ->
-    touchPoint = event.originalEvent.targetTouches[0]
-    # lazy initialization
-    this.model ?= new KeyFSM keyInactive, this, 400 #milli seconds
-    this.model.touchStart touchPoint.pageX, touchPoint.pageY
-
-  $('.key.main').bind 'touchmove', (event) ->
-    this.model.touchMove event.originalEvent
-    event.preventDefault()
-    # Because page scroll are enabled at debug mode, page scroll are disabled on buttons
-
-  $('.key.main').bind 'touchend', (event) -> this.model.touchEnd()
-
-
 menuBar = ->
   $('#new').click ->
     scriptEditor.setValue('')
@@ -547,10 +532,6 @@ $(document).ready ->
   # jQuery Mobile setting
   $('#scriptpage').addBackBtn = false # no back button on top page.
 
-  # prevents native soft keyboard to slip down when button was released.
-  # You may not need this hack when using CodeMirror.
-  $('.key.main').mousedown (event) -> event.preventDefault()
-
   $('div[data-role="page"].editorpage').bind 'pageshow', ->
     if $('#keyboard-on')[0].checked
       $('#keys').css('display', 'block')
@@ -595,7 +576,7 @@ $(document).ready ->
 #  document.body.onresize = layoutEditor
 # layoutEditor on onresize often make transition ugly.
 
-  softKeyboard()
+  initKeys()
   menuBar()
   settingMenu()
 
