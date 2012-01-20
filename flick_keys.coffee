@@ -165,3 +165,44 @@ keySubInactive.touchMove = (fsm, moveX, moveY) ->
 keySubInactive.touchEnd = (fsm) -> fsm.setState keyInactive
 
 
+keyCodes =
+  'Control' : 17
+  'Alt' : 18
+  'Meta' : 91
+  'Left' : 37
+  'Right' : 39
+  'Up' : 38
+  'Home' : 36
+  'PageUp' : 33
+  'U+0009' : 9 # tab
+  'Down' : 40
+  'End' : 35
+  'PageDown' : 34
+  'Shift' : 16
+
+
+KeyboardEvent.DOM_KEY_LOCATION_STANDARD = 0
+
+# emulates keyboard event.
+# Since many properties of KeyboardEvent are read only and can not be set,
+# mobile property is added instead.
+fireKeyEvent = (type, keyIdentifier, keyCode, charCode) ->
+  e = document.createEvent 'KeyboardEvent'
+  e.initKeyboardEvent type, true, true, window, keyIdentifier,
+    KeyboardEvent.DOM_KEY_LOCATION_STANDARD, ''
+  # There is no getModifiersState method in webkit, so you have no way to know the content of modifiersList. So I use '' in the last argument.
+  e.override =
+    keyCode : keyCode
+    charCode : charCode
+
+  document.activeElement.dispatchEvent(e)
+
+
+TextEvent.DOM_INPUT_METHOD_KEYBOARD = 1
+TextEvent.DOM_INPUT_METHOD_PASTE = 2
+
+fireTextEvent = (str, method = TextEvent.DOM_INPUT_METHOD_KEYBOARD) ->
+  e = document.createEvent 'TextEvent'
+  e.initTextEvent 'textInput', true, true, window, str,
+    TextEvent.DOM_INPUT_METHOD_KEYBOARD
+  document.activeElement.dispatchEvent(e)

@@ -117,68 +117,6 @@ layoutEditor = ->
     $('#console').outerHeight(true)
   $('#application').height(restHeight + 'px')
 
-keyCodes =
-  'Control' : 17
-  'Alt' : 18
-  'Meta' : 91
-  'Left' : 37
-  'Right' : 39
-  'Up' : 38
-  'Home' : 36
-  'PageUp' : 33
-  'U+0009' : 9 # tab
-  'Down' : 40
-  'End' : 35
-  'PageDown' : 34
-  'Shift' : 16
-
-
-KeyboardEvent.DOM_KEY_LOCATION_STANDARD = 0
-
-# emulates keyboard event.
-# Since many properties of KeyboardEvent are read only and can not be set,
-# mobile property is added instead.
-fireKeyEvent = (type, keyIdentifier, keyCode, charCode) ->
-  e = document.createEvent 'KeyboardEvent'
-  e.initKeyboardEvent type, true, true, window, keyIdentifier,
-    KeyboardEvent.DOM_KEY_LOCATION_STANDARD, ''
-  # There is no getModifiersState method in webkit, so you have no way to know the content of modifiersList. So I use '' in the last argument.
-  e.override =
-    keyCode : keyCode
-    charCode : charCode
-
-  document.activeElement.dispatchEvent(e)
-
-
-pos2xy = (str, pos) ->
-  lines = str.split('\n')
-  head = 0
-  for y in [0...lines.length]
-    if head <= pos <= head + lines[y].length
-      return {x: pos - head, y: y}
-    head += lines[y].length + 1 # +1 is for '\n'.
-  error = new Error()
-  error.name = 'overposition'
-  error.message = 'pos is larger than str.'
-  throw error
-
-
-xy2pos = (str, xy) ->
-  lines = str.split('\n')
-  return str.length unless 0 <= xy.y < lines.length
-  pos = 0
-  pos += lines[y].length + 1 for y in [0...xy.y]
-  return pos + Math.min(xy.x, lines[y].length)
-
-
-TextEvent.DOM_INPUT_METHOD_KEYBOARD = 1
-TextEvent.DOM_INPUT_METHOD_PASTE = 2
-
-fireTextEvent = (str, method = TextEvent.DOM_INPUT_METHOD_KEYBOARD) ->
-  e = document.createEvent 'TextEvent'
-  e.initTextEvent 'textInput', true, true, window, str,
-    TextEvent.DOM_INPUT_METHOD_KEYBOARD
-  document.activeElement.dispatchEvent(e)
 
 #
 # global variables
