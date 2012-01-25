@@ -123,7 +123,7 @@ keyActive.touchMove = (fsm, moveX, moveY) ->
 
 keyActive.touchEnd = (fsm) ->
   fsm.clearTimer()
-  if fsm.observer.title?
+  if fsm.observer.title? and fsm.observer.title isnt ''
     code = fsm.observer.title.charCodeAt(0)
     fireTextEvent fsm.observer.title
     fireKeyEvent 'keypress', code, code
@@ -194,7 +194,6 @@ fireKeyEvent = (type, keyIdentifier, keyCode, charCode) ->
   e.override =
     keyCode : keyCode
     charCode : charCode
-
   document.activeElement.dispatchEvent(e)
 
 
