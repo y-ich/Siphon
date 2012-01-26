@@ -402,7 +402,7 @@ initMarkupEditor = ->
     matchBrackets: true
     mode : {name : 'xml', htmlMode : true}
     lineNumbers: true
-    onKeyEvent : prefetchKeyEvent
+    #onKeyEvent : prefetchKeyEvent
 
   markupEditor.setHeight = (str) ->
     this.getScrollerElement().style.height = str
@@ -411,16 +411,16 @@ initMarkupEditor = ->
 
 prefetchKeyEvent = (instance, e) ->
   e.override ?= {}
-  e.override['metaKey'] = $('#Meta')[0].model? and
-    $('#Meta')[0].model.state is keyActive
-  e.override['ctrlKey'] = $('#Control')[0].model? and
-    $('#Control')[0].model.state is keyActive
-  e.override['altKey'] = $('#Alt')[0].model? and
-    $('#Alt')[0].model.state is keyActive
-  e.override['shiftKey'] = $('#Shift')[0].model? and
-    $('#Shift')[0].model.state is keyActive
+  e.override['metaKey'] = e.metaKey or
+    ($('#Meta')[0].model? and $('#Meta')[0].model.state is keyActive)
+  e.override['ctrlKey'] = e.ctrlKey or
+    ($('#Control')[0].model? and $('#Control')[0].model.state is keyActive)
+  e.override['altKey'] = e.altKey or
+    ($('#Alt')[0].model? and $('#Alt')[0].model.state is keyActive)
+  e.override['shiftKey'] = e.shiftKey or
+    ($('#Shift')[0].model? and $('#Shift')[0].model.state is keyActive)
 
-  if e.override['metaKey']
+  if e.override['metaKey'] and not e.metaKey
     switch e.keyCode
       when 88 # 'X'.charCodeAt(0)
         if e.type is 'keydown'
@@ -438,7 +438,7 @@ prefetchKeyEvent = (instance, e) ->
           fireTextEvent clipboard, TextEvent.DOM_INPUT_METHOD_PASTE
         e.stop()
         return true
-  if e.ctrlKey || e.override['ctrlKey']
+  if e.override['ctrlKey']
     switch e.keyCode
       when 76 # 'L'.charCodeAt(0)
         if e.type is 'keydown'
