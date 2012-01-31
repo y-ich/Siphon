@@ -21,6 +21,9 @@ lib/util/search.js
 lib/util/searchcursor.js
 lib/util/dialog.js
 lib/util/dialog.css
+lib/util/simple-hint.js
+lib/util/simple-hint.css
+lib/util/coffeescript-hint.js
 # lib/util/foldcode.js
 mode/coffeescript/coffeescript.js
 mode/xml/xml.js

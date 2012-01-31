@@ -182,6 +182,9 @@ initScriptEditor = ->
     lineNumbers: true
     onChange : -> scriptEditor.compile()
     onKeyEvent : prefetchKeyEvent
+    extraKeys:
+      "Alt-Space": (cm) ->
+        CodeMirror.simpleHint cm, CodeMirror.coffeescriptHint
 
   # In order to improve unexpected scroll during inputting on iPad.
   scriptEditor.bodyTop = 0
