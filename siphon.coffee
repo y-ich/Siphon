@@ -475,7 +475,7 @@ menuBar = ->
   $('#saveas').click clickSaveas
 
   $('#about').click ->
-    if confirm 'Siphon\nCoffeeScript Programming Environment\nVersion 0.6.3\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.\nDo you want to check update?'
+    if confirm 'Siphon\nCoffeeScript Programming Environment\nVersion 0.6.4\nCopyright (C) 2011 ICHIKAWA, Yuji All Rights Reserved.\nDo you want to check update?'
       appCacheUpdate()
 
   resetSelects() # "Open...", and "Delete..." menus
@@ -583,4 +583,4 @@ $(document).ready ->
   menuBar()
   settingMenu()
 
-  $('#error').text("What's New (12/29/2011): Sample codes for libraries are available from open menu.")
+  $('#error').text("What's New (02/01/2012): Autocompletion by Alt-space in script editor.")
